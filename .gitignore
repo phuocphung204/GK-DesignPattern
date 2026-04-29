@@ -1,2 +1,2 @@
 *.class
-server_storage/.*
+server_storage/**
