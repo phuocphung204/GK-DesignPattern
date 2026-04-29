@@ -1,6 +1,7 @@
 package vn.edu.tdtu.edocument;
 
 import vn.edu.tdtu.edocument.model.Document;
+import vn.edu.tdtu.edocument.model.enums.*;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ public class AddDocumentDialog extends JDialog {
     private JTextField txtDigitalSignature;
     private JLabel lblFileName;
     private File selectedFile;
+    
     
     private DocumentProcessor processor;
     private MainSwingUI parent;
@@ -115,15 +117,15 @@ public class AddDocumentDialog extends JDialog {
             txtOfficerName.getText().trim(),
             txtOfficerEmail.getText().trim(),
             txtOfficerPhone.getText().trim(),
-            cbDocumentType.getSelectedItem().toString(),
-            filePath, ext, size,
+            DocumentTypes.valueOf(cbDocumentType.getSelectedItem().toString()),
+            filePath, DocumentExtension.valueOf(ext), size,
             txtDigitalSignature.getText().trim(),
-            null, "MOI_TAO"
+            null, DocumentStatus.BAN_NHAP
         );
 
         processor.process(doc);
 
-        if ("DANG_XET_DUYET".equals(doc.status)) {
+        if (DocumentStatus.DANG_XU_LY.equals(doc.status)) {
             parent.addDocumentToList(doc);
             dispose();
         } else {

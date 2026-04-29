@@ -1,6 +1,9 @@
 package vn.edu.tdtu.edocument.service;
 
+import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.RepositoryPattern.local_storage.JsonStorage;
 import vn.edu.tdtu.edocument.model.Document;
+import vn.edu.tdtu.edocument.model.enums.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,6 +14,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class DocumentProcessor {
+    private IRepository _repository;
+    public DocumentProcessor(IRepository repository) {
+        _repository = repository;
+    }
 
     public void process(Document doc) {
         System.out.println("\n=======================================================");
@@ -23,29 +30,29 @@ public class DocumentProcessor {
             doc.officerName == null || doc.officerName.isEmpty() ||
             doc.officerEmail == null || doc.officerEmail.isEmpty() ||
             doc.officerPhone == null || doc.officerPhone.isEmpty() ||
-            doc.documentType == null || doc.documentType.isEmpty() ||
+            doc.documentType == null || doc.documentType == DocumentTypes.CHUA_XAC_DINH ||
             doc.filePath == null || doc.filePath.isEmpty() ||
-            doc.fileExtension == null || doc.fileExtension.isEmpty() ||
+            doc.fileExtension == null ||
             doc.digitalSignature == null || doc.digitalSignature.isEmpty()) {
             
             System.out.println("[LỖI TIẾP NHẬN] Thiếu trường thông tin bắt buộc. Hủy tạo hồ sơ.");
             return;
         }
 
-        doc.status = "DA_TIEP_NHAN";
+        doc.status = DocumentStatus.DA_NOP;
         sendNotifications(doc);
 
         System.out.println("[KIỂM DUYỆT] Đang kiểm tra dung lượng và định dạng...");
         if (doc.fileSizeKB > 5120) {
             System.out.println("[TỪ CHỐI] Dung lượng file " + doc.fileSizeKB + "KB vượt quá 5MB.");
-            doc.status = "TU_CHOI";
+            doc.status = DocumentStatus.TU_CHOI;
             sendNotifications(doc);
             return;
         }
 
-        if (!doc.fileExtension.equalsIgnoreCase("txt")) {
+        if (!doc.fileExtension.equals(DocumentExtension.TXT)) {
             System.out.println("[TỪ CHỐI] Định dạng " + doc.fileExtension + " không được hỗ trợ ở v1.0.");
-            doc.status = "TU_CHOI";
+            doc.status = DocumentStatus.TU_CHOI;
             sendNotifications(doc);
             return;
         }
@@ -56,7 +63,7 @@ public class DocumentProcessor {
             doc.extractedContent = content;
         } catch (IOException e) {
             System.out.println("[LỖI] Không thể đọc nội dung file: " + e.getMessage());
-            doc.status = "TU_CHOI";
+            doc.status = DocumentStatus.TU_CHOI;
             sendNotifications(doc);
             return;
         }
@@ -65,46 +72,24 @@ public class DocumentProcessor {
         saveToStorage(doc);
 
         System.out.println("[HOÀN TẤT] Hồ sơ hợp lệ và đã được lưu trữ thành công.");
-        doc.status = "DANG_XET_DUYET";
+        doc.status = DocumentStatus.DANG_XU_LY;
         sendNotifications(doc);
     }
 
+    public void proccessInsertPersonalInfo(Document doc) {
+        // Xử lý thông tin cá nhân nếu cần thiết
+    }
+
+    public void proccessInsertDocumentFile(Document doc) {
+        // Xử lý tệp đính kèm nếu cần thiết
+    }
+
+    public void proccessInsertSubmissionInfo(Document doc) {
+        // Xử lý thông tin nộp hồ sơ nếu cần thiết
+    }
+
     private void saveToStorage(Document doc) {
-        String storageDirPath = "server_storage";
-        File storageDir = new File(storageDirPath);
-        if (!storageDir.exists()) {
-            storageDir.mkdir();
-        }
-
-        try {
-            Path sourcePath = Paths.get(doc.filePath);
-            Path targetPath = Paths.get(storageDirPath + File.separator + doc.id + "_" + sourcePath.getFileName().toString());
-            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-            String json = "{\n" +
-                    "  \"id\": \"" + doc.id + "\",\n" +
-                    "  \"applicantName\": \"" + doc.applicantName + "\",\n" +
-                    "  \"applicantEmail\": \"" + doc.applicantEmail + "\",\n" +
-                    "  \"applicantPhone\": \"" + doc.applicantPhone + "\",\n" +
-                    "  \"officerName\": \"" + doc.officerName + "\",\n" +
-                    "  \"officerEmail\": \"" + doc.officerEmail + "\",\n" +
-                    "  \"officerPhone\": \"" + doc.officerPhone + "\",\n" +
-                    "  \"documentType\": \"" + doc.documentType + "\",\n" +
-                    "  \"filePath\": \"" + targetPath.toString().replace("\\", "\\\\") + "\",\n" +
-                    "  \"fileExtension\": \"" + doc.fileExtension + "\",\n" +
-                    "  \"fileSizeKB\": " + doc.fileSizeKB + ",\n" +
-                    "  \"digitalSignature\": \"" + doc.digitalSignature + "\",\n" +
-                    "  \"status\": \"" + doc.status + "\"\n" +
-                    "}";
-
-            File dataFile = new File(storageDirPath + File.separator + doc.id + "_data.json");
-            FileWriter writer = new FileWriter(dataFile);
-            writer.write(json);
-            writer.close();
-
-        } catch (IOException e) {
-            System.out.println("[LỖI HỆ THỐNG] Lỗi khi lưu trữ vật lý: " + e.getMessage());
-        }
+        _repository.CreateDocument(doc); // Sử dụng lớp JsonStorage để lưu trữ vật lý và dữ liệu JSON
     }
 
     private void sendNotifications(Document doc) {

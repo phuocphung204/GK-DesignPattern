@@ -1,15 +1,15 @@
 package vn.edu.tdtu.edocument;
 
+import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.RepositoryPattern.local_storage.JsonStorage;
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +19,12 @@ public class MainSwingUI extends JFrame {
     private DefaultTableModel tableModel;
     private DocumentProcessor processor;
     private List<Document> documentList;
+    // Thuộc tính repository để lưu trữ và truy xuất hồ sơ, có thể là JsonStorage hoặc một lớp khác tuỳ vào cấu hình
+    private IRepository _repository = JsonStorage.getInstance(); // Khởi tạo repository với JsonStorage, có thể thay đổi để sử dụng một lớp khác nếu cần
 
     public MainSwingUI() {
-        processor = new DocumentProcessor();
+
+        processor = new DocumentProcessor(_repository);
         documentList = new ArrayList<>();
 
         setTitle("Hệ thống Quản lý Hồ sơ Điện tử - v1.0 (Home)");
@@ -89,61 +92,9 @@ public class MainSwingUI extends JFrame {
     }
 
     private void loadExistingDocuments() {
-        File storageDir = new File("server_storage");
-        if (storageDir.exists() && storageDir.isDirectory()) {
-            File[] files = storageDir.listFiles((dir, name) -> name.endsWith("_data.json"));
-            if (files != null) {
-                for (File file : files) {
-                    try {
-                        String content = new String(Files.readAllBytes(file.toPath()));
-                        Document doc = parseJsonToDocument(content);
-                        if (doc != null) {
-                            documentList.add(doc);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("[LỖI LOAD] Không thể nạp hồ sơ: " + file.getName());
-                    }
-                }
-            }
-        }
-    }
-
-    private Document parseJsonToDocument(String json) {
-        try {
-            String id = extractValue(json, "id");
-            String applicantName = extractValue(json, "applicantName");
-            String applicantEmail = extractValue(json, "applicantEmail");
-            String applicantPhone = extractValue(json, "applicantPhone");
-            String officerName = extractValue(json, "officerName");
-            String officerEmail = extractValue(json, "officerEmail");
-            String officerPhone = extractValue(json, "officerPhone");
-            String documentType = extractValue(json, "documentType");
-            String filePath = extractValue(json, "filePath");
-            String fileExtension = extractValue(json, "fileExtension");
-            long fileSizeKB = Long.parseLong(extractValue(json, "fileSizeKB"));
-            String digitalSignature = extractValue(json, "digitalSignature");
-            String status = extractValue(json, "status");
-
-            return new Document(id, applicantName, applicantEmail, applicantPhone,
-                    officerName, officerEmail, officerPhone, documentType,
-                    filePath, fileExtension, fileSizeKB, digitalSignature, null, status);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String extractValue(String json, String key) {
-        String pattern = "\"" + key + "\": ";
-        int start = json.indexOf(pattern) + pattern.length();
-        if (json.charAt(start) == '\"') {
-            start++;
-            int end = json.indexOf("\"", start);
-            return json.substring(start, end);
-        } else {
-            int end = json.indexOf(",", start);
-            if (end == -1) end = json.indexOf("\n", start);
-            return json.substring(start, end).trim();
-        }
+        _repository.GetAllDocuments().forEach(doc -> {
+            addDocumentToList(doc);
+        });
     }
 
     public void addDocumentToList(Document doc) {

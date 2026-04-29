@@ -1,5 +1,7 @@
 package vn.edu.tdtu.edocument.model;
 
+import vn.edu.tdtu.edocument.model.enums.*;
+
 public class Document {
     public String id;
     public String applicantName;
@@ -8,18 +10,18 @@ public class Document {
     public String officerName;
     public String officerEmail;
     public String officerPhone;
-    public String documentType;
+    public DocumentTypes documentType;
     public String filePath;
-    public String fileExtension;
+    public DocumentExtension fileExtension;
     public long fileSizeKB;
     public String digitalSignature;
     public String extractedContent;
-    public String status;
+    public DocumentStatus status;
 
     public Document(String id, String applicantName, String applicantEmail, String applicantPhone,
                     String officerName, String officerEmail, String officerPhone,
-                    String documentType, String filePath, String fileExtension, 
-                    long fileSizeKB, String digitalSignature, String extractedContent, String status) {
+                    DocumentTypes documentType, String filePath, DocumentExtension fileExtension,
+                    long fileSizeKB, String digitalSignature, String extractedContent, DocumentStatus status) {
         this.id = id;
         this.applicantName = applicantName;
         this.applicantEmail = applicantEmail;
@@ -34,6 +36,10 @@ public class Document {
         this.digitalSignature = digitalSignature;
         this.extractedContent = extractedContent;
         this.status = status;
+    }
+
+    public Document() {
+        // Default constructor
     }
 
     @Override
