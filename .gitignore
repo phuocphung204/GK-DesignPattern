@@ -1,2 +1,7 @@
 *.class
 server_storage/.*
+
+.vscode
+docs
+
+bin
