@@ -3,7 +3,9 @@ package vn.edu.tdtu.edocument.RepositoryPattern.local_storage;
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.model.enums.*;
 
-public class MappingDocument {
+import java.util.Locale;
+
+public class DocumentMapping {
     
     public static String mapDocumentToJson(Document document) {
         if (document == null) {
@@ -25,6 +27,7 @@ public class MappingDocument {
         sb.append("\n  \"fileSizeKB\": ").append(document.fileSizeKB).append(",");
         sb.append("\n  \"digitalSignature\": ").append(toJsonValue(document.digitalSignature)).append(",");
         sb.append("\n  \"extractedContent\": ").append(toJsonValue(document.extractedContent)).append(",");
+        sb.append("\n  \"extractedContentHash\": ").append(toJsonValue(document.extractedContentHash)).append(",");
         sb.append("\n  \"status\": ").append(toJsonValue(enumToString(document.status)));
         sb.append("\n}");
         return sb.toString();
@@ -35,8 +38,7 @@ public class MappingDocument {
             return null;
         }
 
-        Document doc = new Document();
-        doc.id = nullIfLiteralNull(extractValue(json, "id"));
+        Document doc = new Document(extractValue(json, "id"));
         doc.applicantName = nullIfLiteralNull(extractValue(json, "applicantName"));
         doc.applicantEmail = nullIfLiteralNull(extractValue(json, "applicantEmail"));
         doc.applicantPhone = nullIfLiteralNull(extractValue(json, "applicantPhone"));
@@ -46,14 +48,14 @@ public class MappingDocument {
 
         String documentType = nullIfLiteralNull(extractValue(json, "documentType"));
         if (documentType != null && !documentType.isBlank()) {
-            doc.documentType = DocumentTypes.valueOf(documentType);
+            doc.documentType = DocumentTypes.valueOf(normalizeEnum(documentType));
         }
 
         doc.filePath = nullIfLiteralNull(extractValue(json, "filePath"));
 
         String fileExtension = nullIfLiteralNull(extractValue(json, "fileExtension"));
         if (fileExtension != null && !fileExtension.isBlank()) {
-            doc.fileExtension = DocumentExtension.valueOf(fileExtension);
+            doc.fileExtension = DocumentExtension.valueOf(normalizeEnum(fileExtension));
         }
 
         String fileSize = nullIfLiteralNull(extractValue(json, "fileSizeKB"));
@@ -63,10 +65,10 @@ public class MappingDocument {
 
         doc.digitalSignature = nullIfLiteralNull(extractValue(json, "digitalSignature"));
         doc.extractedContent = nullIfLiteralNull(extractValue(json, "extractedContent"));
-
+        doc.extractedContentHash = nullIfLiteralNull(extractValue(json, "extractedContentHash"));
         String status = nullIfLiteralNull(extractValue(json, "status"));
         if (status != null && !status.isBlank()) {
-            doc.status = DocumentStatus.valueOf(status);
+            doc.status = DocumentStatus.valueOf(normalizeEnum(status));
         }
 
         return doc;
@@ -74,6 +76,10 @@ public class MappingDocument {
 
     private static String enumToString(Enum<?> value) {
         return value == null ? null : value.name();
+    }
+
+    private static String normalizeEnum(String value) {
+        return value == null ? null : value.trim().toUpperCase(Locale.ROOT);
     }
 
     private static String toJsonValue(String value) {

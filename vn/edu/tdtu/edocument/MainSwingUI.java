@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainSwingUI extends JFrame {
+    private static final PrintStream ORIGINAL_ERR = System.err;
+    static {
+        System.err.println("[UI] MainSwingUI class loaded.");
+    }
     private JTextArea consoleArea;
     private JTable documentTable;
     private DefaultTableModel tableModel;
@@ -23,6 +27,7 @@ public class MainSwingUI extends JFrame {
     private IRepository _repository = JsonStorage.getInstance(); // Khởi tạo repository với JsonStorage, có thể thay đổi để sử dụng một lớp khác nếu cần
 
     public MainSwingUI() {
+        System.err.println("[UI] Entering MainSwingUI constructor.");
 
         processor = new DocumentProcessor(_repository);
         documentList = new ArrayList<>();
@@ -58,11 +63,10 @@ public class MainSwingUI extends JFrame {
         add(toolBar, BorderLayout.NORTH);
 
         redirectSystemStreams();
-        loadExistingDocuments();
-        refreshTable();
+        loadExistingDocumentsAsync();
 
         btnAdd.addActionListener(e -> {
-            AddDocumentDialog dialog = new AddDocumentDialog(this, processor);
+            AddDocumentWizardDialog dialog = new AddDocumentWizardDialog(this, processor, _repository);
             dialog.setVisible(true);
             refreshTable();
         });
@@ -91,11 +95,38 @@ public class MainSwingUI extends JFrame {
         });
     }
 
-    private void loadExistingDocuments() {
-        _repository.GetAllDocuments().forEach(doc -> {
-            addDocumentToList(doc);
-        });
+    private void loadExistingDocumentsAsync() {
+        // Loading/parsing can be heavy (large extractedContent), so do it off the EDT.
+        SwingWorker<List<Document>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected List<Document> doInBackground() {
+                try {
+                    /// đổi lại _repository khác nếu muốn load từ một nguồn khác (ví dụ: database, API, v.v.)
+                    return _repository.GetAllDocuments();
+                } catch (Exception e) {
+                    ORIGINAL_ERR.println("[UI] Failed to load existing documents: " + e.getMessage());
+                    e.printStackTrace(ORIGINAL_ERR);
+                    return List.of();
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    List<Document> docs = get();
+                    documentList.clear();
+                    documentList.addAll(docs);
+                    refreshTable();
+                    ORIGINAL_ERR.println("[UI] Loaded " + docs.size() + " document(s).");
+                } catch (Exception e) {
+                    ORIGINAL_ERR.println("[UI] Failed to finalize load: " + e.getMessage());
+                    e.printStackTrace(ORIGINAL_ERR);
+                }
+            }
+        };
+        worker.execute();
     }
+
 
     public void addDocumentToList(Document doc) {
         documentList.add(doc);
@@ -127,7 +158,21 @@ public class MainSwingUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception e) {}
-        SwingUtilities.invokeLater(() -> new MainSwingUI().setVisible(true));
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            ORIGINAL_ERR.println("[UI] LookAndFeel error: " + e.getMessage());
+            e.printStackTrace(ORIGINAL_ERR);
+        }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                MainSwingUI ui = new MainSwingUI();
+                ui.setVisible(true);
+                ORIGINAL_ERR.println("[UI] MainSwingUI launched.");
+            } catch (Exception e) {
+                ORIGINAL_ERR.println("[UI] Failed to initialize MainSwingUI: " + e.getMessage());
+                e.printStackTrace(ORIGINAL_ERR);
+            }
+        });
     }
 }
