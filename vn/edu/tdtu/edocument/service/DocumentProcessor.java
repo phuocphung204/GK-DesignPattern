@@ -27,8 +27,9 @@ public class DocumentProcessor {
             System.out.println("[LỖI TIẾP NHẬN] Thiếu trường thông tin cá nhân. Hủy tạo hồ sơ.");
             return false;
         }
-        // Cần nâng cấp lên State pattern để quản lý trạng thái hồ sơ tốt hơn, tránh việc set status ở nhiều nơi như thế này
-        if (doc.status == null) {
+
+        // Nếu chưa có trạng thái, khởi tạo bản nháp, nếu đã có trạng thái thì giữ nguyên (trường hợp cập nhật thông tin cá nhân sau khi đã tạo hồ sơ)
+        if (doc.status == DocumentStatus.KHONG_XAC_DINH) {
             doc.status = DocumentStatus.BAN_NHAP;
         }
         saveToStorage(doc); // Lưu tạm hồ sơ sau khi nhập thông tin cá nhân, có thể là bản nháp
@@ -77,6 +78,7 @@ public class DocumentProcessor {
         if (!validationResult) {
             return false;
         }
+        // Nếu đang ở trạng thái "Bản nháp" và đã nhập tệp đính kèm thành công, chuyển sang trạng thái "Đã tải file"
         if (doc.status == DocumentStatus.BAN_NHAP) {
             doc.status = DocumentStatus.DA_TAI_FILE;
         }
@@ -90,6 +92,7 @@ public class DocumentProcessor {
             System.out.println("[LỖI TIẾP NHẬN] Thiếu trường thông tin cán bộ xử lý. Hủy tạo hồ sơ.");
             return;
         }
+        // Nếu đang ở trạng thái "Đã tải file" và đã nhập thông tin nộp hồ sơ thành công, chuyển sang trạng thái "Đã tiếp nhận"
         if (doc.status == DocumentStatus.DA_TAI_FILE) {
             doc.status = DocumentStatus.DA_TIEP_NHAN;
         }

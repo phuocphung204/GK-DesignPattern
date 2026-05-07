@@ -43,6 +43,7 @@ public class Document {
     public Document(String id) {
         // Default constructor
         this.id = id;
+        this.status = DocumentStatus.KHONG_XAC_DINH; // Mặc định trạng thái là "Không xác định"
     }
 
     @Override
