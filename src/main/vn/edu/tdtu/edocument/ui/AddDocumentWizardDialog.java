@@ -177,17 +177,17 @@ public class AddDocumentWizardDialog extends JDialog {
 
     private void showStep() {
         switch (stepIndex) {
-            case 0:
-                cardLayout.show(cardPanel, STEP_PERSONAL);
-                break;
-            case 1:
-                cardLayout.show(cardPanel, STEP_FILE);
-                break;
-            case 2:
-                cardLayout.show(cardPanel, STEP_CONFIRM);
-                break;
-            default:
-                cardLayout.show(cardPanel, STEP_PERSONAL);
+        case 0:
+            cardLayout.show(cardPanel, STEP_PERSONAL);
+            break;
+        case 1:
+            cardLayout.show(cardPanel, STEP_FILE);
+            break;
+        case 2:
+            cardLayout.show(cardPanel, STEP_CONFIRM);
+            break;
+        default:
+            cardLayout.show(cardPanel, STEP_PERSONAL);
         }
         updateButtonState();
     }
@@ -246,18 +246,21 @@ public class AddDocumentWizardDialog extends JDialog {
 
     private boolean commitCurrentStep() {
         if (stepIndex == 0) {
-            
+
             String name = txtApplicantName.getText().trim();
             String email = txtApplicantEmail.getText().trim();
             String phone = txtApplicantPhone.getText().trim();
 
-            // Tạo builder tạm thời để kiểm tra thông tin cá nhân, không cần lưu vào builder chính thức nếu chưa qua bước xác thực file
+            // Tạo builder tạm thời để kiểm tra thông tin cá nhân, không cần lưu vào builder
+            // chính thức nếu chưa qua bước xác thực file
             docBuilder.SetPersonalInfo(name, email, phone);
-            // Kiểm tra thông tin cá nhân đã nhập, nếu thiếu sẽ không cho phép qua bước tiếp theo
+            // Kiểm tra thông tin cá nhân đã nhập, nếu thiếu sẽ không cho phép qua bước tiếp
+            // theo
             boolean isValid = processor.proccessInsertPersonalInfo(docBuilder.Build());
 
             if (!isValid) {
-                JOptionPane.showMessageDialog(this, "Vui long nhap day du thong tin nguoi nop.", "Loi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vui long nhap day du thong tin nguoi nop.", "Loi",
+                        JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             return true;
@@ -265,7 +268,8 @@ public class AddDocumentWizardDialog extends JDialog {
 
         if (stepIndex == 1) {
             if (selectedFile == null) {
-                JOptionPane.showMessageDialog(this, "Vui long chon tap tin dinh kem.", "Loi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vui long chon tap tin dinh kem.", "Loi",
+                        JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
@@ -274,22 +278,20 @@ public class AddDocumentWizardDialog extends JDialog {
                 JOptionPane.showMessageDialog(this, "Khong tim thay duoi file.", "Loi", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            
+
             DocumentExtension extension = DocumentExtension.valueOf(ext.toUpperCase(Locale.ROOT));
 
-            long sizeKb = selectedFile.length();
-            // tạo builder tạm thời để kiểm tra thông tin file, không cần lưu vào builder chính thức nếu chưa qua bước xác thực
-            docBuilder.SetFileInfo(
-                    (DocumentTypes) cbDocumentType.getSelectedItem(),
-                    selectedFile.getAbsolutePath(),
-                    extension,
-                    sizeKb,
-                    txtDigitalSignature.getText().trim()
-            );
-            // Kiểm tra thông tin file đã nhập, nếu thiếu hoặc không hợp lệ sẽ không cho phép qua bước tiếp theo
+            long sizeKb = selectedFile.length() / 1024;
+            // tạo builder tạm thời để kiểm tra thông tin file, không cần lưu vào builder
+            // chính thức nếu chưa qua bước xác thực
+            docBuilder.SetFileInfo((DocumentTypes) cbDocumentType.getSelectedItem(), selectedFile.getAbsolutePath(),
+                    extension, sizeKb, txtDigitalSignature.getText().trim());
+            // Kiểm tra thông tin file đã nhập, nếu thiếu hoặc không hợp lệ sẽ không cho
+            // phép qua bước tiếp theo
             boolean isValid = processor.proccessInsertDocumentFile(docBuilder.Build());
             if (!isValid) {
-                JOptionPane.showMessageDialog(this, "File tai lieu khong hop le. Vui long kiem tra log.", "Loi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "File tai lieu khong hop le. Vui long kiem tra log.", "Loi",
+                        JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             return true;
@@ -301,17 +303,20 @@ public class AddDocumentWizardDialog extends JDialog {
         String officerName = txtOfficerName.getText().trim();
         String officerEmail = txtOfficerEmail.getText().trim();
         String officerPhone = txtOfficerPhone.getText().trim();
-        // Tạo builder hoàn chỉnh với tất cả thông tin đã nhập, bao gồm cả thông tin cán bộ xử lý
+        // Tạo builder hoàn chỉnh với tất cả thông tin đã nhập, bao gồm cả thông tin cán
+        // bộ xử lý
         docBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
         Document doc = docBuilder.Build();
-        // Xử lý thông tin nộp hồ sơ, nếu có lỗi sẽ không hoàn thành wizard và sẽ hiển thị lỗi
+        // Xử lý thông tin nộp hồ sơ, nếu có lỗi sẽ không hoàn thành wizard và sẽ hiển
+        // thị lỗi
         processor.proccessInsertSubmissionInfo(doc);
 
         if (DocumentStatus.DA_TIEP_NHAN.equals(doc.status)) {
             parent.addDocumentToList(doc);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Ho so khong hop le. Vui long kiem tra log.", "Loi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ho so khong hop le. Vui long kiem tra log.", "Loi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
