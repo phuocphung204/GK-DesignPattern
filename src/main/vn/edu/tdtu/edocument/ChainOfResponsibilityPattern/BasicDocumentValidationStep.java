@@ -21,7 +21,7 @@ public class BasicDocumentValidationStep extends DocumentValidationStepBase {
             System.out.println("[TỪ CHỐI] Số điện thoại không hợp lệ. Phải là 10 chữ số.");
             return false;
         }
-        System.out.println("[KIỂM DUYỆT] Thông tin cá nhân hợp lệ.");
+        System.out.println("[THÀNH CÔNG] Thông tin cá nhân hợp lệ.");
         return true;
     }
 }

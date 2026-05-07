@@ -29,7 +29,7 @@ public class BasicFileValidationStep extends DocumentValidationStepBase {
             System.out.println("[TỪ CHỐI] File thiếu chữ ký số hợp lệ.");
             return false;
         }
-        System.out.println("[KIỂM DUYỆT] File hợp lệ.");
+        System.out.println("[THÀNH CÔNG] File hợp lệ.");
         return true;
     }
 }
