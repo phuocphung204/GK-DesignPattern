@@ -33,7 +33,7 @@ public class VirusScanValidationStep extends DocumentValidationStepBase {
 			System.out.println("[TỪ CHỐI] Lỗi khi quét tệp: " + e.getMessage());
 			return false;
 		}
-
+		System.out.println("[KIỂM DUYỆT] Không phát hiện mối đe dọa nào. Tệp an toàn.");
 		return true;
 	}
 }

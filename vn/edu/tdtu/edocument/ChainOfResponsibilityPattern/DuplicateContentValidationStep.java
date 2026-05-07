@@ -16,6 +16,7 @@ public class DuplicateContentValidationStep extends DocumentValidationStepBase {
             System.out.println("[TỪ CHỐI] Hồ sơ đã tồn tại trong hệ thống.");
             return false;
         }
+        System.out.println("[KIỂM DUYỆT] Không phát hiện trùng lặp. Hồ sơ hợp lệ.");
         return true;
     }
     private boolean checkDuplicate(String extractedContent) {

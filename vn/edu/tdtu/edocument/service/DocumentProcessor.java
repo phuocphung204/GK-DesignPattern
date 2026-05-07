@@ -11,10 +11,19 @@ import java.nio.file.Paths;
 
 public class DocumentProcessor {
     private IRepository _repository;
+    private IDocumentValidationStep _fileValidationChain; // Chuỗi kiểm tra tệp đính kèm, sẽ được khởi tạo khi cần thiết
+    private FileValidationContext _context;
 
     public DocumentProcessor(IRepository repository) {
         _repository = repository;
+        _fileValidationChain = new BasicDocumentValidationStep(_repository);
     }
+
+    private void resetChain() {
+        _fileValidationChain = new BasicDocumentValidationStep(_repository);
+        _context.resetFileInfo(); // Reset lại thông tin file trong context để tránh lỗi khi nhập lại thông tin cá nhân sau khi đã nhập tệp đính kèm trước đó
+    }
+
     // Các phương thức xử lý từng bước của quy trình tiếp nhận hồ sơ
     // B1: Nhập thông tin cá nhân
     // B2: Nhập tệp đính kèm
@@ -27,7 +36,16 @@ public class DocumentProcessor {
             System.out.println("[LỖI TIẾP NHẬN] Thiếu trường thông tin cá nhân. Hủy tạo hồ sơ.");
             return false;
         }
-
+        // Nếu đang ở trạng thái "Bản nháp" do nhập lại thông tin cá nhân sau khi đã vào trạng thái khác, reset lại chuỗi kiểm tra để đảm bảo các bước kiểm tra được thực hiện đầy đủ khi nhập lại thông tin cá nhân
+        if (doc.status == DocumentStatus.BAN_NHAP) {
+            resetChain(); // Nếu đang ở trạng thái "Bản nháp", reset lại chuỗi kiểm tra để đảm bảo các bước kiểm tra được thực hiện đầy đủ khi nhập lại thông tin cá nhân
+        }
+        _context = new FileValidationContext(doc.applicantName, doc.applicantEmail, doc.applicantPhone); // Tạo context với thông tin người nộp để truyền vào chuỗi kiểm tra sau này
+        // Thực hiện chuỗi kiểm tra thông tin cá nhân ngay sau khi nhập, nếu không hợp lệ sẽ trả về false và dừng quy trình tiếp nhận
+        boolean validationResult = _fileValidationChain.handleValidation(_context);
+        if (!validationResult) {
+            return false;
+        }
         // Nếu chưa có trạng thái, khởi tạo bản nháp, nếu đã có trạng thái thì giữ nguyên (trường hợp cập nhật thông tin cá nhân sau khi đã tạo hồ sơ)
         if (doc.status == DocumentStatus.KHONG_XAC_DINH) {
             doc.status = DocumentStatus.BAN_NHAP;
@@ -58,7 +76,7 @@ public class DocumentProcessor {
         }
 
         // Tạo context với thông tin file để truyền vào chuỗi kiểm tra
-        FileValidationContext context = FileValidationContext.create(
+        _context.setFileInfo(
             doc.documentType.toString(),
             doc.filePath,
             doc.fileExtension.toString(),
@@ -68,12 +86,12 @@ public class DocumentProcessor {
         );
 
         // Tạo chuỗi kiểm tra (giữ lại step đầu làm "head" của chain)
-        IDocumentValidationStep fileValidation = new BasicFileValidationStep(_repository);
-        fileValidation
+        _fileValidationChain
+            .setNext(new BasicFileValidationStep(_repository))
             .setNext(new VirusScanValidationStep(_repository))
             .setNext(new DuplicateContentValidationStep(_repository));
         // Thực hiện chuỗi kiểm tra
-        boolean validationResult = fileValidation.handleValidation(context);
+        boolean validationResult = _fileValidationChain.handleValidation(_context);
 
         if (!validationResult) {
             return false;
@@ -96,10 +114,11 @@ public class DocumentProcessor {
         if (doc.status == DocumentStatus.DA_TAI_FILE) {
             doc.status = DocumentStatus.DA_TIEP_NHAN;
         }
+        resetChain(); // Sau khi hoàn thành quy trình tiếp nhận, reset lại chuỗi kiểm tra để sẵn sàng cho hồ sơ tiếp theo
         sendNotifications(doc);
         saveToStorage(doc); // Lưu hồ sơ sau khi nhập đầy đủ thông tin, có thể là bản nháp hoặc chính thức tùy theo logic của ứng dụng
     }
-
+    
     private void saveToStorage(Document doc) {
         _repository.CreateOrUpdateDocument(doc); 
         // Sử dụng repository để lưu trữ hồ sơ, có thể là lưu vào file JSON hoặc cơ sở dữ liệu tùy theo implementation của repository

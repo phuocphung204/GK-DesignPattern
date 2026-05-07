@@ -1,6 +1,10 @@
 package vn.edu.tdtu.edocument.ChainOfResponsibilityPattern;
 
 public class FileValidationContext {
+    // thông tin người nộp
+    public String applicantName;
+    public String applicantEmail;
+    public String applicantPhone;
 
     // Thông tin hồ sơ
     public String documentType;
@@ -10,7 +14,18 @@ public class FileValidationContext {
     public String digitalSignature;
     public String extractedContent;
 
-    private FileValidationContext(String documentType, String filePath, String fileExtension, long fileSizeKB, String digitalSignature, String extractedContent) {
+    // Thông tin cán bộ tiếp nhận (nếu đã có)
+    // public String officerName;
+    // public String officerEmail;
+    // public String officerPhone;
+
+    public FileValidationContext(String applicantName, String applicantEmail, String applicantPhone) {
+        this.applicantName = applicantName;
+        this.applicantEmail = applicantEmail;
+        this.applicantPhone = applicantPhone;
+    }
+
+    public void setFileInfo(String documentType, String filePath, String fileExtension, long fileSizeKB, String digitalSignature, String extractedContent) {
         this.documentType = documentType;
         this.filePath = filePath;
         this.fileExtension = fileExtension;
@@ -18,8 +33,12 @@ public class FileValidationContext {
         this.digitalSignature = digitalSignature;
         this.extractedContent = extractedContent;
     }
-
-    public static FileValidationContext create(String documentType, String filePath, String fileExtension, long fileSizeKB, String digitalSignature, String extractedContent) {
-        return new FileValidationContext(documentType, filePath, fileExtension, fileSizeKB, digitalSignature, extractedContent);
+    public void resetFileInfo() {
+        this.documentType = null;
+        this.filePath = null;
+        this.fileExtension = null;
+        this.fileSizeKB = 0;
+        this.digitalSignature = null;
+        this.extractedContent = null;
     }
 }

@@ -23,7 +23,13 @@ public class BasicFileValidationStep extends DocumentValidationStepBase {
             System.out.println("[TỪ CHỐI] Định dạng file " + request.fileExtension + " không hỗ trợ.");
             return false;
         }
-        
+
+        // Kiểm tra chữ ký số
+        if (request.digitalSignature.isBlank()) {
+            System.out.println("[TỪ CHỐI] File thiếu chữ ký số hợp lệ.");
+            return false;
+        }
+        System.out.println("[KIỂM DUYỆT] File hợp lệ.");
         return true;
     }
 }
