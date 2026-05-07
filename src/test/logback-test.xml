@@ -1,0 +1,27 @@
+<configuration debug="true">
+  <!-- 1. Appender để in ra Console -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <!-- Định dạng: Thời gian [Luồng] Mức độ Tên-Class - Thông điệp -->
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- 2. Appender để lưu vào File -->
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <!-- Đường dẫn file log. Sử dụng đường dẫn tương đối từ working dir để tránh
+          phụ thuộc vào Maven property không được thiết lập (${project.basedir}).
+          Hãy đảm bảo thư mục `logs` tồn tại trước khi chạy tests. -->
+    <file>logs/test-debug.log</file>
+    <append>true</append>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- 3. Thiết lập mức độ log và gắn các Appender vào -->
+  <root level="DEBUG">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+</configuration>

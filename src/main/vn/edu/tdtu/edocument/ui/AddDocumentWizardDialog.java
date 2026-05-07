@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument;
+package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.BuilderPattern.*;
 import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;

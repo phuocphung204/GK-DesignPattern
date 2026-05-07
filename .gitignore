@@ -1,2 +1,14 @@
 *.class
 server_storage/**
+
+.github
+.vscode
+.env
+
+docs
+bin
+logs
+
+lib/*
+
+

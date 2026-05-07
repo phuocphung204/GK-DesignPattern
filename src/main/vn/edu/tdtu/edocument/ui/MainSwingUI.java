@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument;
+package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
 import vn.edu.tdtu.edocument.RepositoryPattern.local_storage.JsonStorage;
@@ -37,7 +37,7 @@ public class MainSwingUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        String[] columnNames = {"Mã hồ sơ", "Người nộp", "Loại hồ sơ", "Trạng thái", "Tập tin"};
+        String[] columnNames = { "Mã hồ sơ", "Người nộp", "Loại hồ sơ", "Trạng thái", "Tập tin" };
         tableModel = new DefaultTableModel(columnNames, 0);
         documentTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(documentTable);
@@ -77,12 +77,14 @@ public class MainSwingUI extends JFrame {
             if (!e.getValueIsAdjusting() && documentTable.getSelectedRow() != -1) {
                 int selectedRow = documentTable.getSelectedRow();
                 String docId = tableModel.getValueAt(selectedRow, 0).toString();
-                
+
                 for (Document doc : documentList) {
                     if (doc.id.equals(docId)) {
                         System.out.println("\n--- CHI TIẾT HỒ SƠ: " + doc.id + " ---");
-                        System.out.println("Người nộp: " + doc.applicantName + " | Email: " + doc.applicantEmail + " | SĐT: " + doc.applicantPhone);
-                        System.out.println("Cán bộ tiếp nhận: " + doc.officerName + " | Email: " + doc.officerEmail + " | SĐT: " + doc.officerPhone);
+                        System.out.println("Người nộp: " + doc.applicantName + " | Email: " + doc.applicantEmail
+                                + " | SĐT: " + doc.applicantPhone);
+                        System.out.println("Cán bộ tiếp nhận: " + doc.officerName + " | Email: " + doc.officerEmail
+                                + " | SĐT: " + doc.officerPhone);
                         System.out.println("Loại hồ sơ: " + doc.documentType);
                         System.out.println("Đường dẫn tệp: " + doc.filePath + " (" + doc.fileSizeKB + " KB)");
                         System.out.println("Chữ ký số: " + doc.digitalSignature);
@@ -127,7 +129,6 @@ public class MainSwingUI extends JFrame {
         worker.execute();
     }
 
-
     public void addDocumentToList(Document doc) {
         documentList.add(doc);
     }
@@ -135,16 +136,22 @@ public class MainSwingUI extends JFrame {
     private void refreshTable() {
         tableModel.setRowCount(0);
         for (Document doc : documentList) {
-            tableModel.addRow(new Object[]{
-                doc.id, doc.applicantName, doc.documentType, doc.status, doc.fileExtension
-            });
+            tableModel.addRow(
+                    new Object[] { doc.id, doc.applicantName, doc.documentType, doc.status, doc.fileExtension });
         }
     }
 
     private void redirectSystemStreams() {
         OutputStream out = new OutputStream() {
-            @Override public void write(int b) { updateTextArea(String.valueOf((char) b)); }
-            @Override public void write(byte[] b, int off, int len) { updateTextArea(new String(b, off, len)); }
+            @Override
+            public void write(int b) {
+                updateTextArea(String.valueOf((char) b));
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) {
+                updateTextArea(new String(b, off, len));
+            }
         };
         System.setOut(new PrintStream(out, true));
         System.setErr(new PrintStream(out, true));
