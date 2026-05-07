@@ -15,11 +15,20 @@ public class Document {
     public String digitalSignature;
     public String extractedContent;
     public String status;
+    public UserPreference userPreference;
 
-    public Document(String id, String applicantName, String applicantEmail, String applicantPhone,
-                    String officerName, String officerEmail, String officerPhone,
-                    String documentType, String filePath, String fileExtension, 
-                    long fileSizeKB, String digitalSignature, String extractedContent, String status) {
+    public Document(String id, String applicantName, String applicantEmail, String applicantPhone, String officerName,
+            String officerEmail, String officerPhone, String documentType, String filePath, String fileExtension,
+            long fileSizeKB, String digitalSignature, String extractedContent, String status) {
+        this(id, applicantName, applicantEmail, applicantPhone, officerName, officerEmail, officerPhone, documentType,
+                filePath, fileExtension, fileSizeKB, digitalSignature, extractedContent, status,
+                UserPreference.defaultPreference());
+    }
+
+    public Document(String id, String applicantName, String applicantEmail, String applicantPhone, String officerName,
+            String officerEmail, String officerPhone, String documentType, String filePath, String fileExtension,
+            long fileSizeKB, String digitalSignature, String extractedContent, String status,
+            UserPreference userPreference) {
         this.id = id;
         this.applicantName = applicantName;
         this.applicantEmail = applicantEmail;
@@ -34,6 +43,7 @@ public class Document {
         this.digitalSignature = digitalSignature;
         this.extractedContent = extractedContent;
         this.status = status;
+        this.userPreference = userPreference;
     }
 
     @Override

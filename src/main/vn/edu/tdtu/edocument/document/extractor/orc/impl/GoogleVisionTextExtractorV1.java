@@ -1,6 +1,7 @@
 package vn.edu.tdtu.edocument.document.extractor.orc.impl;
 
 import io.github.cdimascio.dotenv.Dotenv;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,9 +12,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.Base64;
+
 import javax.imageio.ImageIO;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import vn.edu.tdtu.edocument.document.extractor.orc.core.IOcrService;
 import vn.edu.tdtu.edocument.document.extractor.orc.core.OcrException;
 

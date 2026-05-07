@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument;
+package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;

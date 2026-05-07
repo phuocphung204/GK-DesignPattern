@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument;
+package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
@@ -15,7 +15,7 @@ public class AddDocumentDialog extends JDialog {
     private JTextField txtDigitalSignature;
     private JLabel lblFileName;
     private File selectedFile;
-    
+
     private DocumentProcessor processor;
     private MainSwingUI parent;
 
@@ -23,7 +23,7 @@ public class AddDocumentDialog extends JDialog {
         super(parent, "Tiếp nhận hồ sơ mới", true);
         this.parent = parent;
         this.processor = processor;
-        
+
         setSize(450, 550);
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
@@ -56,7 +56,7 @@ public class AddDocumentDialog extends JDialog {
         formPanel.add(txtOfficerPhone);
 
         formPanel.add(new JLabel("Loại hồ sơ:"));
-        cbDocumentType = new JComboBox<>(new String[]{"DON_XIN_PHEP", "BAO_CAO", "HO_SO_THUE"});
+        cbDocumentType = new JComboBox<>(new String[] { "DON_XIN_PHEP", "BAO_CAO", "HO_SO_THUE" });
         formPanel.add(cbDocumentType);
 
         formPanel.add(new JLabel("Chữ ký số:"));
@@ -67,7 +67,8 @@ public class AddDocumentDialog extends JDialog {
         JButton btnFile = new JButton("Chọn...");
         lblFileName = new JLabel("Chưa chọn");
         JPanel pFile = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        pFile.add(btnFile); pFile.add(lblFileName);
+        pFile.add(btnFile);
+        pFile.add(lblFileName);
         formPanel.add(pFile);
 
         add(formPanel, BorderLayout.CENTER);
@@ -107,19 +108,11 @@ public class AddDocumentDialog extends JDialog {
             }
         }
 
-        Document doc = new Document(
-            UUID.randomUUID().toString().substring(0, 8),
-            txtApplicantName.getText().trim(),
-            txtApplicantEmail.getText().trim(),
-            txtApplicantPhone.getText().trim(),
-            txtOfficerName.getText().trim(),
-            txtOfficerEmail.getText().trim(),
-            txtOfficerPhone.getText().trim(),
-            cbDocumentType.getSelectedItem().toString(),
-            filePath, ext, size,
-            txtDigitalSignature.getText().trim(),
-            null, "MOI_TAO"
-        );
+        Document doc = new Document(UUID.randomUUID().toString().substring(0, 8), txtApplicantName.getText().trim(),
+                txtApplicantEmail.getText().trim(), txtApplicantPhone.getText().trim(), txtOfficerName.getText().trim(),
+                txtOfficerEmail.getText().trim(), txtOfficerPhone.getText().trim(),
+                cbDocumentType.getSelectedItem().toString(), filePath, ext, size, txtDigitalSignature.getText().trim(),
+                null, "MOI_TAO");
 
         processor.process(doc);
 
@@ -127,7 +120,8 @@ public class AddDocumentDialog extends JDialog {
             parent.addDocumentToList(doc);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Hồ sơ không hợp lệ. Vui lòng kiểm tra lại log.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hồ sơ không hợp lệ. Vui lòng kiểm tra lại log.", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }
