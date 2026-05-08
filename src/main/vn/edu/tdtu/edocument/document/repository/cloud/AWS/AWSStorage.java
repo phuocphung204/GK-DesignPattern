@@ -30,7 +30,7 @@ public class AWSStorage implements IRepository {
         this.config = config;
         // Fake "bucket" folder name to keep data separate from other repositories.
         String bucket = safePathSegment(config == null ? null : config.getBucketName());
-        String base = FileStorageHelper.DEFAULT_STORAGE_DIR + File.separator + "aws";
+        String base = "aws_storage";
         this.storageDir = (bucket == null || bucket.isBlank()) ? base : (base + File.separator + bucket);
     }
 

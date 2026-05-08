@@ -1,5 +1,6 @@
 *.class
 server_storage/**
+aws_storage/my-bucket/**
 target/**
 
 .github
