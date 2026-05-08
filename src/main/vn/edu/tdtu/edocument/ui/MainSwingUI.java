@@ -1,11 +1,11 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.repositories.*;
-import vn.edu.tdtu.edocument.repositories.database.MongoDB.DocumentRepository;
-import vn.edu.tdtu.edocument.repositories.database.MongoDB.MongoDBConfiguration;
-import vn.edu.tdtu.edocument.repositories.local_storage.JsonStorage;
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.enums.RepositoryType;
+import vn.edu.tdtu.edocument.document.repository.*;
+import vn.edu.tdtu.edocument.document.repository.database.MongoDB.DocumentRepository;
+import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBConfiguration;
+import vn.edu.tdtu.edocument.document.repository.local_storage.JsonStorage;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;

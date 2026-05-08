@@ -1,9 +1,9 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.BuilderPattern.*;
-import vn.edu.tdtu.edocument.repositories.IRepository;
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.enums.*;
+import vn.edu.tdtu.edocument.document.builder.*;
+import vn.edu.tdtu.edocument.document.repository.IRepository;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.*;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;

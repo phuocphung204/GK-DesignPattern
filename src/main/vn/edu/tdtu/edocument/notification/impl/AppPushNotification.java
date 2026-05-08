@@ -1,7 +1,7 @@
 package vn.edu.tdtu.edocument.notification.impl;
 
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.UserPreference;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.UserPreference;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 
 public class AppPushNotification implements NotificationObserver {

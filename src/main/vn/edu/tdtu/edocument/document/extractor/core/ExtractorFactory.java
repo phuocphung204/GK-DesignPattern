@@ -6,7 +6,7 @@ import vn.edu.tdtu.edocument.document.extractor.impl.PngContentExtractor;
 import vn.edu.tdtu.edocument.document.extractor.impl.TxtContentExtractor;
 import vn.edu.tdtu.edocument.document.extractor.orc.core.IOcrService;
 import vn.edu.tdtu.edocument.document.extractor.orc.impl.GeminiTextExtractor;
-import vn.edu.tdtu.edocument.model.enums.DocumentExtension;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 
 public class ExtractorFactory {
     public static final IOcrService ocrService = new GeminiTextExtractor();

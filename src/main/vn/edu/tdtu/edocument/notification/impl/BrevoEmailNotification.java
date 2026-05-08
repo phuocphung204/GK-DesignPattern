@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.UserPreference;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.UserPreference;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 
 public class BrevoEmailNotification implements NotificationObserver {

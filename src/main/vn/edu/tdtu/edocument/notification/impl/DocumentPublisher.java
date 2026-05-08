@@ -1,6 +1,6 @@
 package vn.edu.tdtu.edocument.notification.impl;
 
-import vn.edu.tdtu.edocument.model.Document;
+import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 import vn.edu.tdtu.edocument.notification.core.Subject;
 

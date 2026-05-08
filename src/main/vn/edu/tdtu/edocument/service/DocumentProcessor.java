@@ -1,12 +1,13 @@
 package vn.edu.tdtu.edocument.service;
 
-import vn.edu.tdtu.edocument.ChainOfResponsibilityPattern.*;
-import vn.edu.tdtu.edocument.repositories.IRepository;
-import vn.edu.tdtu.edocument.repositories.FileStorageHelper;
+import vn.edu.tdtu.edocument.document.validation.*;
+import vn.edu.tdtu.edocument.document.validation.steps.*;
+import vn.edu.tdtu.edocument.document.repository.IRepository;
+import vn.edu.tdtu.edocument.document.repository.FileStorageHelper;
 import vn.edu.tdtu.edocument.document.extractor.core.ExtractorFactory;
 import vn.edu.tdtu.edocument.document.extractor.core.FileExtractorStrategy;
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.enums.*;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.*;
 
 import java.io.File;
 
