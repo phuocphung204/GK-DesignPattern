@@ -1,7 +1,8 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
-import vn.edu.tdtu.edocument.RepositoryPattern.local_storage.JsonStorage;
+import vn.edu.tdtu.edocument.RepositoryPattern.*;
+import vn.edu.tdtu.edocument.RepositoryPattern.database.MongoDB.DocumentRepository;
+import vn.edu.tdtu.edocument.RepositoryPattern.database.MongoDB.MongoDBConfiguration;
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
@@ -24,8 +25,9 @@ public class MainSwingUI extends JFrame {
     private DocumentProcessor processor;
     private List<Document> documentList;
     // Thuộc tính repository để lưu trữ và truy xuất hồ sơ, có thể là JsonStorage hoặc một lớp khác tuỳ vào cấu hình
-    private IRepository _repository = JsonStorage.getInstance(); // Khởi tạo repository với JsonStorage, có thể thay đổi để sử dụng một lớp khác nếu cần
-
+    // private IRepository _repository = JsonStorage.getInstance(); // Khởi tạo repository với JsonStorage, có thể thay đổi để sử dụng một lớp khác nếu cần
+    private MongoDBConfiguration mongoConfig = MongoDBConfiguration.getInstance();
+    private DocumentRepository _repository = new DocumentRepository(mongoConfig);
     public MainSwingUI() {
         System.err.println("[UI] Entering MainSwingUI constructor.");
 

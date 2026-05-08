@@ -1,29 +1,34 @@
 package vn.edu.tdtu.edocument.RepositoryPattern.database.MongoDB;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
 public class MongoDBConfiguration {
-    private String host;
-    private int port;
-    private String database;
+    private static final String CONNECTION_STRING = System.getenv("CONNECTION_STRING");
+    private static final String DATABASE_NAME = System.getenv("DATABASE_NAME");
 
-    public MongoDBConfiguration(String host, int port, String database) {
-        this.host = host;
-        this.port = port;
-        this.database = database;
+    private final MongoClient mongoClient;
+    private final MongoDatabase database;
+
+    private static final MongoDBConfiguration instance = new MongoDBConfiguration(); // Singleton instance (eager)
+
+    public MongoDBConfiguration() {
+        mongoClient = MongoClients.create(CONNECTION_STRING);
+        database = mongoClient.getDatabase(DATABASE_NAME);
     }
 
-    public String getHost() {
-        return host;
+    public static MongoDBConfiguration getInstance() {
+        return instance;
     }
 
-    public int getPort() {
-        return port;
+    public MongoCollection<Document> getCollection(String collectionName) {
+        return database.getCollection(collectionName);
     }
 
-    public String getDatabase() {
-        return database;
-    }
-
-    public void connect() {
-        System.out.println("Kết nối đến MongoDB...");
+    public void close() {
+        mongoClient.close();
     }
 }
