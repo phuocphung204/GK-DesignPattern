@@ -1,5 +1,6 @@
 *.class
 server_storage/**
+target/**
 
 .github
 .vscode

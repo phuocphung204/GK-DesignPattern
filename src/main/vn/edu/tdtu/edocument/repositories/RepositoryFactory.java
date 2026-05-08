@@ -1,6 +1,7 @@
 package vn.edu.tdtu.edocument.repositories;
 
 import vn.edu.tdtu.edocument.model.enums.RepositoryType;
+import vn.edu.tdtu.edocument.repositories.cloud.AWS.AWSStorage;
 import vn.edu.tdtu.edocument.repositories.database.MongoDB.MongoDBConfiguration;
 import vn.edu.tdtu.edocument.repositories.database.MongoDB.DocumentRepository;
 import vn.edu.tdtu.edocument.repositories.local_storage.JsonStorage;
@@ -19,7 +20,8 @@ public class RepositoryFactory {
                 break;
             case AWS:
                 try {
-                    // Implement AWS repository creation if needed
+                    // Fake AWS repository (stores JSON metadata under server_storage/aws)
+                    return AWSStorage.getInstance();
                 } catch (Exception e) {
                     System.err.println("[Factory] AWS configuration failed: " + e.getMessage());
                 }

@@ -18,12 +18,12 @@ public class MongoDBConfiguration {
     }
 
     public MongoDBConfiguration() {
-        String connectionString = resolve("CONNECTION_STRING");
-        String databaseName = resolve("DATABASE_NAME");
+        String connectionString = resolve("MONGODB_CONNECTION_STRING");
+        String databaseName = resolve("MONGODB_DATABASE_NAME");
 
         if (connectionString == null || connectionString.isBlank() || databaseName == null || databaseName.isBlank()) {
             throw new IllegalStateException(
-                    "MongoDB is not configured. Set CONNECTION_STRING and DATABASE_NAME (env vars, .env, or -D properties).");
+                    "MongoDB is not configured. Set MONGODB_CONNECTION_STRING and MONGODB_DATABASE_NAME (env vars, .env, or -D properties).");
         }
 
         mongoClient = MongoClients.create(connectionString);
