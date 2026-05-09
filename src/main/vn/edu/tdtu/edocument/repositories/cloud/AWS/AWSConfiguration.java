@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.cloud.AWS;
+package vn.edu.tdtu.edocument.repositories.cloud.AWS;
 
 public class AWSConfiguration {
     private String accessKey;

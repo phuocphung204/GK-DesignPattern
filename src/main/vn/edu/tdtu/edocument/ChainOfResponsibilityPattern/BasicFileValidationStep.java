@@ -1,6 +1,6 @@
 package vn.edu.tdtu.edocument.ChainOfResponsibilityPattern;
 
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.repositories.IRepository;
 import vn.edu.tdtu.edocument.model.enums.*;
 
 public class BasicFileValidationStep extends DocumentValidationStepBase {

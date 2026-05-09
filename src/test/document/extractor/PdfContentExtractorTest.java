@@ -19,6 +19,18 @@ import io.github.cdimascio.dotenv.Dotenv;
 class PdfContentExtractorTest {
     private static final Logger logger = LoggerFactory.getLogger(OrcServiceTextExtractor.class);
 
+    private static boolean isLiveOcrEnabled() {
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        String enabled = dotenv.get("RUN_LIVE_OCR_TESTS");
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getProperty("run.live.ocr.tests");
+        }
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getenv("RUN_LIVE_OCR_TESTS");
+        }
+        return "true".equalsIgnoreCase(enabled);
+    }
+
     private static boolean hasGeminiKey() {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String key = dotenv.get("GEMINI_MODEL_KEY");
@@ -58,7 +70,10 @@ class PdfContentExtractorTest {
     @Test
     @DisplayName("Kiểm tra trích xuất văn bản, 1 trang PDF chỉ có hình ảnh (OCR)")
     void extractTextFromMultiPageImageOnlyPdf() {
-        Assumptions.assumeTrue(hasGeminiKey(), "Skipping OCR test: missing GEMINI_MODEL_KEY or -Dgemini.model.key");
+        Assumptions.assumeTrue(
+            isLiveOcrEnabled() && hasGeminiKey(),
+            "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
+        );
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
         File pdf = new File("server_storage/chi-co-hinh-anh.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");

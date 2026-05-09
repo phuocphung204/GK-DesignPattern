@@ -1,12 +1,13 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.database.MongoDB;
+package vn.edu.tdtu.edocument.repositories.database.MongoDB;
 
 import com.mongodb.client.MongoCollection;
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.repositories.IRepository;
 import vn.edu.tdtu.edocument.model.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.or;
 
@@ -26,8 +27,8 @@ public class DocumentRepository implements IRepository {
     }
 
     @Override
-    public Document GetDocumentById(String id) {
-        var filter = new org.bson.Document("id", id);
+    public Document GetDocumentById(UUID id) {
+        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
         var doc = collection.find(filter).first();
         if (doc == null) {
             return null;
@@ -38,8 +39,8 @@ public class DocumentRepository implements IRepository {
     @Override
     public Document GetLatestDraftOrUploaded() {
         var doc = collection.find(or(
-                new org.bson.Document("status", "DRAFT"),
-                new org.bson.Document("status", "UPLOADED")
+                new org.bson.Document("status", "BAN_NHAP"),
+                new org.bson.Document("status", "DA_TAI_FILE")
         )).first();
         if (doc == null) {
             return null;
@@ -61,22 +62,22 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public void UpdateDocument(Document doc) {
-        var filter = new org.bson.Document("id", doc.id);
+        var filter = new org.bson.Document("_id", doc == null || doc.id == null ? null : doc.id.toString());
         var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
-        bsonDoc.remove("id");
+        bsonDoc.remove("_id");
         var update = new org.bson.Document("$set", bsonDoc);
         collection.updateOne(filter, update);
     }
 
-    public boolean existById(String id) {
-        var filter = new org.bson.Document("id", id);
+    public boolean existById(UUID id) {
+        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
         var doc = collection.find(filter).first();
         return doc != null;
     }
 
     @Override
     public void CreateOrUpdateDocument(Document doc) {
-        if (doc == null || doc.id == null || doc.id.isBlank()) {
+        if (doc == null || doc.id == null) {
             System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
             return;
         }
@@ -88,8 +89,8 @@ public class DocumentRepository implements IRepository {
     }
 
     @Override
-    public void DeleteDocument(String id) {
-        var filter = new org.bson.Document("id", id);
+    public void DeleteDocument(UUID id) {
+        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
         collection.deleteOne(filter);
     }
 }

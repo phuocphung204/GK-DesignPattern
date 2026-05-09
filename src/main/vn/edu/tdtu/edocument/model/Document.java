@@ -1,11 +1,13 @@
 package vn.edu.tdtu.edocument.model;
 
+import java.util.UUID;
+
 import vn.edu.tdtu.edocument.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.model.enums.DocumentTypes;
 
 public class Document {
-    public String id;
+    public UUID id;
     public String applicantName;
     public String applicantEmail;
     public String applicantPhone;
@@ -22,7 +24,7 @@ public class Document {
     public DocumentStatus status;
     public UserPreference userPreference;
 
-    public Document(String id, String applicantName, String applicantEmail, String applicantPhone,
+    public Document(UUID id, String applicantName, String applicantEmail, String applicantPhone,
             String officerName, String officerEmail, String officerPhone,
             DocumentTypes documentType, String filePath, DocumentExtension fileExtension,
             long fileSizeKB, String digitalSignature, String extractedContent, String extractedContentHash,
@@ -45,7 +47,7 @@ public class Document {
         this.userPreference = userPreference;
     }
 
-    public Document(String id, String applicantName, String applicantEmail, String applicantPhone,
+    public Document(UUID id, String applicantName, String applicantEmail, String applicantPhone,
             String officerName, String officerEmail, String officerPhone,
             DocumentTypes documentType, String filePath, DocumentExtension fileExtension,
             long fileSizeKB, String digitalSignature, String extractedContent, DocumentStatus status) {
@@ -54,7 +56,7 @@ public class Document {
                 status, UserPreference.defaultPreference());
     }
 
-    public Document(String id) {
+    public Document(UUID id) {
         this.id = id;
         this.status = DocumentStatus.KHONG_XAC_DINH;
         this.userPreference = UserPreference.defaultPreference();

@@ -7,7 +7,7 @@ import vn.edu.tdtu.edocument.model.enums.*;
 
 public class DocumentBuilder implements IDocumentBuilder {
     private Document _result;
-    private String id = UUID.randomUUID().toString().substring(0, 8);
+    private UUID id = UUID.randomUUID();
 
     public DocumentBuilder() {
         _result = new Document(id);

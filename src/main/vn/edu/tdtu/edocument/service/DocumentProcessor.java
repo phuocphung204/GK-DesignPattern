@@ -1,7 +1,8 @@
 package vn.edu.tdtu.edocument.service;
 
 import vn.edu.tdtu.edocument.ChainOfResponsibilityPattern.*;
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.repositories.IRepository;
+import vn.edu.tdtu.edocument.repositories.FileStorageHelper;
 import vn.edu.tdtu.edocument.document.extractor.core.ExtractorFactory;
 import vn.edu.tdtu.edocument.document.extractor.core.FileExtractorStrategy;
 import vn.edu.tdtu.edocument.model.Document;
@@ -76,6 +77,11 @@ public class DocumentProcessor {
             return false;
         }
 
+        if (doc.id == null) {
+            System.out.println("[LỖI TIẾP NHẬN] Hồ sơ chưa có ID. Hủy tạo hồ sơ.");
+            return false;
+        }
+
         if (doc.extractedContent == null || doc.extractedContent.isBlank()) {
             System.out.println("[TRÍCH XUẤT] Đang đọc nội dung tệp đính kèm...");
             // TODO: Trích xuất file json trên local, Khi nào xong yc2 thì đổi lại
@@ -105,6 +111,15 @@ public class DocumentProcessor {
         boolean validationResult = _fileValidationChain.handleValidation(_context);
 
         if (!validationResult) {
+            return false;
+        }
+
+        // Sau khi xác thực thành công, copy file đính kèm vào server_storage để dùng
+        // chung cho mọi repository (JSON/MongoDB/...) và tránh phụ thuộc vào đường dẫn máy người dùng.
+        try {
+            doc.filePath = FileStorageHelper.copyToDefaultStorage(doc.id, doc.filePath);
+        } catch (Exception e) {
+            System.out.println("[LỖI] Không thể lưu file đính kèm vào server_storage: " + e.getMessage());
             return false;
         }
         // Nếu đang ở trạng thái "Bản nháp" và đã nhập tệp đính kèm thành công, chuyển

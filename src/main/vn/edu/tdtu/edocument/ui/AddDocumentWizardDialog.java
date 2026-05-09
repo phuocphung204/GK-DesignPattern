@@ -1,7 +1,7 @@
 package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.BuilderPattern.*;
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.repositories.IRepository;
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.model.enums.*;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
@@ -312,6 +312,7 @@ public class AddDocumentWizardDialog extends JDialog {
         processor.proccessInsertSubmissionInfo(doc);
 
         if (DocumentStatus.DA_TIEP_NHAN.equals(doc.status)) {
+            parent.refreshTable();
             parent.addDocumentToList(doc);
             dispose();
         } else {

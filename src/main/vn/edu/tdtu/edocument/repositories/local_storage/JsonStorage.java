@@ -1,30 +1,29 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.local_storage;
+package vn.edu.tdtu.edocument.repositories.local_storage;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
+import vn.edu.tdtu.edocument.repositories.IRepository;
 import vn.edu.tdtu.edocument.model.enums.DocumentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class JsonStorage implements IRepository {
     private static final String STORAGE_DIR = "server_storage";
     private static final JsonStorage _instance = new JsonStorage(); // Singleton instance EAGER initialization
 
-    private static Path buildStoredFilePath(String storageDirPath, String id, Path sourcePath) {
-        // Avoid duplicating the prefix if the file name already starts with "<id>_".
-        String fileName = sourcePath.getFileName().toString();
-        String prefix = id + "_";
-        String targetFileName = fileName.startsWith(prefix) ? fileName : (prefix + fileName);
-        return Paths.get(storageDirPath + File.separator + targetFileName);
+    private static String storageKey(UUID id) {
+        if (id == null) {
+            return null;
+        }
+        // Keep filenames backward-compatible with existing server_storage: 8 hex chars.
+        // UUID.toString() format is "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".
+        return id.toString().substring(0, 8);
     }
 
     private JsonStorage() {
@@ -35,17 +34,17 @@ public class JsonStorage implements IRepository {
         return _instance;
     }
 
-    public boolean ExistsById(String id) {
-        if (id == null || id.isBlank()) 
+    public boolean ExistsById(UUID id) {
+        if (id == null)
             return false;
         String storageDirPath = STORAGE_DIR;
-        File dataFile = new File(storageDirPath + File.separator + id + "_data.json");
+        File dataFile = new File(storageDirPath + File.separator + storageKey(id) + "_data.json");
         return dataFile.exists();
     }
 
     @Override
     public void CreateOrUpdateDocument(Document doc) {
-        if (doc == null || doc.id == null || doc.id.isBlank()) {
+        if (doc == null || doc.id == null) {
             System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
             return;
         }
@@ -64,10 +63,10 @@ public class JsonStorage implements IRepository {
             .anyMatch(doc -> hash.equals(doc.extractedContentHash) && doc.status != DocumentStatus.DA_TAI_FILE);
     }
 
-    public Document GetDocumentById(String id) {
+    public Document GetDocumentById(UUID id) {
         // Implementation to read JSON file and return Document object by ID
         String storageDirPath = STORAGE_DIR;
-        File dataFile = new File(storageDirPath + File.separator + id + "_data.json");
+        File dataFile = new File(storageDirPath + File.separator + storageKey(id) + "_data.json");
         if (dataFile.exists()) {
             try {
                 String json = new String(Files.readAllBytes(dataFile.toPath()));
@@ -148,7 +147,7 @@ public class JsonStorage implements IRepository {
 
     @Override
     public void CreateDocument(Document doc) {
-        if (doc == null || doc.id == null || doc.id.isBlank()) {
+        if (doc == null || doc.id == null) {
             System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
             return;
         }
@@ -160,17 +159,9 @@ public class JsonStorage implements IRepository {
         }
 
         try {
-            if (doc.filePath != null && !doc.filePath.isBlank()) {
-                Path sourcePath = Paths.get(doc.filePath);
-                Path targetPath = buildStoredFilePath(storageDirPath, doc.id, sourcePath);
-                if (!sourcePath.normalize().toAbsolutePath().equals(targetPath.normalize().toAbsolutePath())) {
-                    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-                doc.filePath = targetPath.toString();
-            }
             String json = DocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
 
-            File dataFile = new File(storageDirPath + File.separator + doc.id + "_data.json");
+            File dataFile = new File(storageDirPath + File.separator + storageKey(doc.id) + "_data.json");
             try (FileWriter writer = new FileWriter(dataFile)) {
                 writer.write(json == null ? "" : json);
             }
@@ -182,7 +173,7 @@ public class JsonStorage implements IRepository {
 
     @Override
     public void UpdateDocument(Document doc) {
-        if (doc == null || doc.id == null || doc.id.isBlank()) {
+        if (doc == null || doc.id == null) {
             System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
             return;
         }
@@ -194,17 +185,8 @@ public class JsonStorage implements IRepository {
         }
 
         try {
-            if (doc.filePath != null && !doc.filePath.isBlank()) {
-                Path sourcePath = Paths.get(doc.filePath);
-                Path targetPath = buildStoredFilePath(storageDirPath, doc.id, sourcePath);
-                if (!sourcePath.normalize().toAbsolutePath().equals(targetPath.normalize().toAbsolutePath())) {
-                    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-                doc.filePath = targetPath.toString();
-            }
-
             String json = DocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
-            File dataFile = new File(storageDirPath + File.separator + doc.id + "_data.json");
+            File dataFile = new File(storageDirPath + File.separator + storageKey(doc.id) + "_data.json");
             try (FileWriter writer = new FileWriter(dataFile)) {
                 writer.write(json == null ? "" : json);
             }
@@ -215,11 +197,15 @@ public class JsonStorage implements IRepository {
     }
 
     @Override
-    public void DeleteDocument(String id) {
+    public void DeleteDocument(UUID id) {
+        if (id == null) {
+            return;
+        }
         String storageDirPath = STORAGE_DIR;
         File storageDir = new File(storageDirPath);
         if (storageDir.exists() && storageDir.isDirectory()) {
-            File[] files = storageDir.listFiles((dir, name) -> name.startsWith(id + "_"));
+            String prefix = storageKey(id) + "_";
+            File[] files = storageDir.listFiles((dir, name) -> name.startsWith(prefix));
             if (files != null) {
                 for (File file : files) {
                     file.delete();

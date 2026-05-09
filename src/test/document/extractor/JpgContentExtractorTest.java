@@ -16,6 +16,18 @@ import java.io.File;
 public class JpgContentExtractorTest {
     private static final Logger logger = LoggerFactory.getLogger(JpgContentExtractorTest.class);
 
+    private static boolean isLiveOcrEnabled() {
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        String enabled = dotenv.get("RUN_LIVE_OCR_TESTS");
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getProperty("run.live.ocr.tests");
+        }
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getenv("RUN_LIVE_OCR_TESTS");
+        }
+        return "true".equalsIgnoreCase(enabled);
+    }
+
     private static boolean hasGeminiKey() {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String key = dotenv.get("GEMINI_MODEL_KEY");
@@ -31,7 +43,10 @@ public class JpgContentExtractorTest {
     @Test
     @DisplayName("Kiểm tra trích xuất văn bản từ JPG đơn giản")
     void extractTextFromSimpleJpg() {
-        Assumptions.assumeTrue(hasGeminiKey(), "Skipping OCR test: missing GEMINI_MODEL_KEY or -Dgemini.model.key");
+        Assumptions.assumeTrue(
+            isLiveOcrEnabled() && hasGeminiKey(),
+            "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
+        );
         JpgContentExtractor extractor = new JpgContentExtractor(ExtractorFactory.ocrService);
         File jpg = new File("server_storage/van-ban.jpg"); // chuẩn bị sample
         assertTrue(jpg.exists(), "tệp JPG mẫu phải tồn tại");

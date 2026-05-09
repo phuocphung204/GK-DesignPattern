@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.local_storage;
+package vn.edu.tdtu.edocument.repositories.local_storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,6 +8,7 @@ import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.model.enums.*;
 
 import java.util.Locale;
+import java.util.UUID;
 
 public class DocumentMapping {
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -18,7 +19,7 @@ public class DocumentMapping {
         }
 
         ObjectNode root = MAPPER.createObjectNode();
-        root.put("id", document.id);
+        root.put("id", document.id == null ? null : document.id.toString());
         root.put("applicantName", document.applicantName);
         root.put("applicantEmail", document.applicantEmail);
         root.put("applicantPhone", document.applicantPhone);
@@ -49,7 +50,7 @@ public class DocumentMapping {
 
         try {
             JsonNode root = MAPPER.readTree(json);
-            String id = nullIfLiteralNull(textOrNull(root.get("id")));
+            UUID id = parseUuidOrNull(textOrNull(root.get("id")));
             Document doc = new Document(id);
             doc.applicantName = nullIfLiteralNull(textOrNull(root.get("applicantName")));
             doc.applicantEmail = nullIfLiteralNull(textOrNull(root.get("applicantEmail")));
@@ -126,5 +127,17 @@ public class DocumentMapping {
             return null;
         }
         return "null".equalsIgnoreCase(value) ? null : value;
+    }
+
+    private static UUID parseUuidOrNull(String value) {
+        value = nullIfLiteralNull(value);
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(value.trim());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 }

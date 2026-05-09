@@ -1,11 +1,13 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.database.MongoDB;
+package vn.edu.tdtu.edocument.repositories.database.MongoDB;
 
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.model.enums.DocumentTypes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.UUID;
 
 public class DocumentMapping {
     public static org.bson.Document mapDocumentToBson(Document document) {
@@ -14,7 +16,7 @@ public class DocumentMapping {
         }
 
         return new org.bson.Document()
-                .append("id", document.id)
+            .append("_id", document.id == null ? null : document.id.toString())
                 .append("applicantName", document.applicantName)
                 .append("applicantEmail", document.applicantEmail)
                 .append("applicantPhone", document.applicantPhone)
@@ -36,7 +38,7 @@ public class DocumentMapping {
             return null;
         }
 
-        Document doc = new Document(bsonDoc.getString("id"));
+        Document doc = new Document(readUuidId(bsonDoc));
         doc.applicantName = bsonDoc.getString("applicantName");
         doc.applicantEmail = bsonDoc.getString("applicantEmail");
         doc.applicantPhone = bsonDoc.getString("applicantPhone");
@@ -64,6 +66,53 @@ public class DocumentMapping {
         }
 
         return doc;
+    }
+
+    private static UUID readUuidId(org.bson.Document bsonDoc) {
+        // Prefer explicit "id" field if present (some legacy docs may have both "_id" and "id").
+        UUID fromIdField = parseUuidOrNull(bsonDoc.getString("id"));
+        if (fromIdField != null) {
+            return fromIdField;
+        }
+
+        // New docs: "_id" stored as UUID string.
+        Object raw = bsonDoc.get("_id");
+        if (raw == null) {
+            return null;
+        }
+        if (raw instanceof UUID uuid) {
+            return uuid;
+        }
+        if (raw instanceof String s) {
+            return parseUuidOrNull(s);
+        }
+        // Legacy MongoDB default: ObjectId.
+        if (raw instanceof org.bson.types.ObjectId objectId) {
+            // Deterministic mapping so the same ObjectId becomes the same UUID in the app.
+            String hex = objectId.toHexString();
+            return UUID.nameUUIDFromBytes(hex.getBytes(StandardCharsets.UTF_8));
+        }
+        // If driver stored UUID as Binary, try best-effort cast via Document API.
+        try {
+            UUID uuid = bsonDoc.get("_id", UUID.class);
+            if (uuid != null) {
+                return uuid;
+            }
+        } catch (Exception ignored) {
+            // ignore
+        }
+        return null;
+    }
+
+    private static UUID parseUuidOrNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return UUID.fromString(value.trim());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private static String enumToString(Enum<?> value) {

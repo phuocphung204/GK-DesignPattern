@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.RepositoryPattern.local_storage;
+package vn.edu.tdtu.edocument.repositories.local_storage;
 
 import org.junit.jupiter.api.Test;
 import vn.edu.tdtu.edocument.model.Document;
@@ -12,7 +12,7 @@ public class DocumentMappingTest {
 
     @Test
     void roundTrip_preservesFieldsAndEscapes() {
-        Document doc = new Document("abc");
+        Document doc = new Document(java.util.UUID.randomUUID());
         doc.applicantName = "Nguyen Van A";
         doc.applicantEmail = "a@example.com";
         doc.applicantPhone = "0123456789";
@@ -56,8 +56,9 @@ public class DocumentMappingTest {
 
     @Test
     void mapJsonToDocument_parsesEnumsCaseInsensitive() {
+        String id = "00000000-0000-0000-0000-000000000001";
         String json = "{\n" +
-                "  \"id\": \"1\",\n" +
+            "  \"id\": \"" + id + "\",\n" +
                 "  \"documentType\": \"bao_cao\",\n" +
                 "  \"fileExtension\": \"pdf\",\n" +
                 "  \"status\": \"da_tiep_nhan\",\n" +
@@ -66,7 +67,7 @@ public class DocumentMappingTest {
 
         Document parsed = DocumentMapping.mapJsonToDocument(json);
         assertNotNull(parsed);
-        assertEquals("1", parsed.id);
+        assertEquals(java.util.UUID.fromString(id), parsed.id);
         assertEquals(DocumentTypes.BAO_CAO, parsed.documentType);
         assertEquals(DocumentExtension.PDF, parsed.fileExtension);
         assertEquals(DocumentStatus.DA_TIEP_NHAN, parsed.status);
@@ -75,8 +76,9 @@ public class DocumentMappingTest {
 
     @Test
     void mapJsonToDocument_convertsLiteralNullStringToNull() {
+        String id = "00000000-0000-0000-0000-000000000002";
         String json = "{\n" +
-                "  \"id\": \"1\",\n" +
+            "  \"id\": \"" + id + "\",\n" +
                 "  \"applicantName\": \"null\",\n" +
                 "  \"officerEmail\": null\n" +
                 "}";
