@@ -1,7 +1,6 @@
 package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
 
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 
@@ -25,7 +24,7 @@ public class DocumentMapping {
                 .append("officerPhone", document.officerPhone)
                 .append("documentType", enumToString(document.documentType))
                 .append("filePath", document.filePath)
-                .append("fileExtension", enumToString(document.fileExtension))
+                .append("fileExtension", document.fileExtension)
                 .append("fileSizeKB", document.fileSizeKB)
                 .append("digitalSignature", document.digitalSignature)
                 .append("extractedContent", document.extractedContent)
@@ -49,7 +48,8 @@ public class DocumentMapping {
         doc.documentType = parseEnum(DocumentTypes.class, bsonDoc.getString("documentType"));
         doc.filePath = bsonDoc.getString("filePath");
 
-        doc.fileExtension = parseEnum(DocumentExtension.class, bsonDoc.getString("fileExtension"));
+        String fileExtension = bsonDoc.getString("fileExtension");
+        doc.fileExtension = fileExtension == null ? null : fileExtension.trim().toUpperCase(Locale.ROOT);
 
         Number fileSize = bsonDoc.get("fileSizeKB", Number.class);
         if (fileSize != null) {

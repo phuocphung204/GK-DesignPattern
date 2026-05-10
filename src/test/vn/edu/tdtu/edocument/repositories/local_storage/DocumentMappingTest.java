@@ -3,7 +3,6 @@ package src.test.vn.edu.tdtu.edocument.document.repository.local_storage;
 import org.junit.jupiter.api.Test;
 import vn.edu.tdtu.edocument.document.repository.local_storage.DocumentMapping;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 
@@ -22,7 +21,7 @@ public class DocumentMappingTest {
         doc.officerPhone = "0987654321";
         doc.documentType = DocumentTypes.BAO_CAO;
         doc.filePath = "C:\\temp\\a.pdf";
-        doc.fileExtension = DocumentExtension.PDF;
+        doc.fileExtension = "PDF";
         doc.fileSizeKB = 42;
         doc.digitalSignature = "sig";
         doc.extractedContent = "line1\n\"quoted\" \\ backslash\tend";
@@ -70,7 +69,7 @@ public class DocumentMappingTest {
         assertNotNull(parsed);
         assertEquals(java.util.UUID.fromString(id), parsed.id);
         assertEquals(DocumentTypes.BAO_CAO, parsed.documentType);
-        assertEquals(DocumentExtension.PDF, parsed.fileExtension);
+        assertEquals("PDF", parsed.fileExtension);
         assertEquals(DocumentStatus.DA_TIEP_NHAN, parsed.status);
         assertEquals(10, parsed.fileSizeKB);
     }

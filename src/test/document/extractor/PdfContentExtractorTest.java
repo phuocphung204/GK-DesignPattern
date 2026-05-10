@@ -47,7 +47,7 @@ class PdfContentExtractorTest {
     @DisplayName("Kiểm tra trích xuất văn bản từ PDF đơn giản")
     void extractTextFromSimplePdf() {
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/sample-text.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/sample-text.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");
@@ -59,7 +59,7 @@ class PdfContentExtractorTest {
     @DisplayName("Kiểm tra trích xuất văn bản, từ nhiều trang PDF")
     void extractTextFromMultiPagePdf() {
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/nhieu-trang-co-text-player.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/nhieu-trang-co-text-player.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");
@@ -75,7 +75,7 @@ class PdfContentExtractorTest {
             "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
         );
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/chi-co-hinh-anh.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/chi-co-hinh-anh.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");

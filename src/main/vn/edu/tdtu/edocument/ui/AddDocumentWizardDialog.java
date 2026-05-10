@@ -279,7 +279,7 @@ public class AddDocumentWizardDialog extends JDialog {
                 return false;
             }
 
-            DocumentExtension extension = DocumentExtension.valueOf(ext.toUpperCase(Locale.ROOT));
+            String extension = ext.toUpperCase(Locale.ROOT);
 
             long sizeKb = selectedFile.length() / 1024;
             // tạo builder tạm thời để kiểm tra thông tin file, không cần lưu vào builder
@@ -309,7 +309,12 @@ public class AddDocumentWizardDialog extends JDialog {
         Document doc = docBuilder.Build();
         // Xử lý thông tin nộp hồ sơ, nếu có lỗi sẽ không hoàn thành wizard và sẽ hiển
         // thị lỗi
-        processor.proccessInsertSubmissionInfo(doc);
+        boolean isValid = processor.proccessInsertSubmissionInfo(doc);
+        if (!isValid) {
+            JOptionPane.showMessageDialog(this, "Thong tin can bo xu ly khong hop le. Vui long kiem tra log.", "Loi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (DocumentStatus.DA_TIEP_NHAN.equals(doc.status)) {
             parent.refreshTable();

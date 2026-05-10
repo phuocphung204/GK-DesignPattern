@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.*;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -28,7 +29,7 @@ public class DocumentMapping {
         root.put("officerPhone", document.officerPhone);
         root.put("documentType", enumToString(document.documentType));
         root.put("filePath", document.filePath);
-        root.put("fileExtension", enumToString(document.fileExtension));
+        root.put("fileExtension", document.fileExtension);
         root.put("fileSizeKB", document.fileSizeKB);
         root.put("digitalSignature", document.digitalSignature);
         root.put("extractedContent", document.extractedContent);
@@ -61,7 +62,8 @@ public class DocumentMapping {
 
             doc.documentType = parseEnum(DocumentTypes.class, textOrNull(root.get("documentType")));
             doc.filePath = nullIfLiteralNull(textOrNull(root.get("filePath")));
-            doc.fileExtension = parseEnum(DocumentExtension.class, textOrNull(root.get("fileExtension")));
+            String fileExtension = nullIfLiteralNull(textOrNull(root.get("fileExtension")));
+            doc.fileExtension = fileExtension == null ? null : fileExtension.trim().toUpperCase(Locale.ROOT);
 
             JsonNode fileSizeNode = root.get("fileSizeKB");
             if (fileSizeNode != null && !fileSizeNode.isNull() && !fileSizeNode.isMissingNode()) {

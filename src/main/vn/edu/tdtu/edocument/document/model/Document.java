@@ -2,7 +2,6 @@ package vn.edu.tdtu.edocument.document.model;
 
 import java.util.UUID;
 
-import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 
@@ -16,7 +15,7 @@ public class Document {
     public String officerPhone;
     public DocumentTypes documentType;
     public String filePath;
-    public DocumentExtension fileExtension;
+    public String fileExtension;
     public long fileSizeKB;
     public String digitalSignature;
     public String extractedContent;
@@ -26,7 +25,7 @@ public class Document {
 
     public Document(UUID id, String applicantName, String applicantEmail, String applicantPhone,
             String officerName, String officerEmail, String officerPhone,
-            DocumentTypes documentType, String filePath, DocumentExtension fileExtension,
+            DocumentTypes documentType, String filePath, String fileExtension,
             long fileSizeKB, String digitalSignature, String extractedContent, String extractedContentHash,
             DocumentStatus status, UserPreference userPreference) {
         this.id = id;
@@ -49,7 +48,7 @@ public class Document {
 
     public Document(UUID id, String applicantName, String applicantEmail, String applicantPhone,
             String officerName, String officerEmail, String officerPhone,
-            DocumentTypes documentType, String filePath, DocumentExtension fileExtension,
+            DocumentTypes documentType, String filePath, String fileExtension,
             long fileSizeKB, String digitalSignature, String extractedContent, DocumentStatus status) {
         this(id, applicantName, applicantEmail, applicantPhone, officerName, officerEmail, officerPhone,
                 documentType, filePath, fileExtension, fileSizeKB, digitalSignature, extractedContent, null,

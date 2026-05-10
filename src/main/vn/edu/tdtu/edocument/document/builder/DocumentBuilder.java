@@ -30,7 +30,7 @@ public class DocumentBuilder implements IDocumentBuilder {
     }
 
     @Override
-    public void SetFileInfo(DocumentTypes documentType, String filePath, DocumentExtension fileExtension, long fileSizeKB, String digitalSignature) {
+    public void SetFileInfo(DocumentTypes documentType, String filePath, String fileExtension, long fileSizeKB, String digitalSignature) {
         _result.documentType = documentType;
         _result.filePath = filePath;
         _result.fileExtension = fileExtension;

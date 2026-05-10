@@ -48,7 +48,7 @@ public class JpgContentExtractorTest {
             "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
         );
         JpgContentExtractor extractor = new JpgContentExtractor(ExtractorFactory.ocrService);
-        File jpg = new File("server_storage/van-ban.jpg"); // chuẩn bị sample
+        File jpg = new File("support_test/van-ban.jpg"); // chuẩn bị sample
         assertTrue(jpg.exists(), "tệp JPG mẫu phải tồn tại");
         String text = extractor.extractContent(jpg);
         assertNotNull(text, "văn bản trích xuất không được null");

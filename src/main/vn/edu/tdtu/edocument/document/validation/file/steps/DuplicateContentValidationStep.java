@@ -1,24 +1,28 @@
-package vn.edu.tdtu.edocument.document.validation.steps;
+package vn.edu.tdtu.edocument.document.validation.file.steps;
 
 import vn.edu.tdtu.edocument.document.repository.IRepository;
-import vn.edu.tdtu.edocument.document.validation.*;
+import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
+import vn.edu.tdtu.edocument.document.validation.file.FileValidationStepBase;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
+import vn.edu.tdtu.edocument.document.result.ValidationResult;
+import vn.edu.tdtu.edocument.document.result.Errors;
 import vn.edu.tdtu.edocument.service.Hash;
 
-public class DuplicateContentValidationStep extends DocumentValidationStepBase {
+public class DuplicateContentValidationStep extends FileValidationStepBase {
     public DuplicateContentValidationStep(IRepository repository) {
         super(repository);
     }
     @Override
-    protected boolean performValidation(FileValidationContext request) {
+    protected ValidationResult performValidation(FileValidationContext request) {
         // Giả sử chúng ta có một phương thức để kiểm tra trùng lặp trong database
-        System.out.println("[BƯỚC KIỂM TRA TRÙNG LẶP] Kiểm tra nội dung đã trích xuất...\n");
+        if (request == null) {
+            return ValidationResult.fail(Errors.DUPLICATE_CONTENT);
+        }
         boolean isDuplicate = checkDuplicate(request.extractedContent);
         if (isDuplicate) {
-            System.out.println("[TỪ CHỐI] Hồ sơ đã tồn tại trong hệ thống.");
-            return false;
+            return ValidationResult.fail(Errors.DUPLICATE_CONTENT);
         }
-        System.out.println("[THÀNH CÔNG] Không phát hiện trùng lặp. Hồ sơ hợp lệ.");
-        return true;
+        return ValidationResult.ok();
     }
     private boolean checkDuplicate(String extractedContent) {
         // Gọi phương thức từ repository để kiểm tra trùng lặp

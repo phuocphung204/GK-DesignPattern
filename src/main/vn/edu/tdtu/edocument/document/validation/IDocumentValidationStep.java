@@ -1,6 +1,8 @@
 package vn.edu.tdtu.edocument.document.validation;
 
-public interface IDocumentValidationStep {
-    IDocumentValidationStep setNext(IDocumentValidationStep next);
-    boolean handleValidation(FileValidationContext request);
+import vn.edu.tdtu.edocument.document.result.ValidationResult;
+
+public interface IDocumentValidationStep<TContext> {
+    IDocumentValidationStep<TContext> setNext(IDocumentValidationStep<TContext> next);
+    ValidationResult handleValidation(TContext request);
 }

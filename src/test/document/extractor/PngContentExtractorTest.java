@@ -49,7 +49,7 @@ class PngContentExtractorTest {
             "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
         );
         PngContentExtractor extractor = new PngContentExtractor(ExtractorFactory.ocrService);
-        File png = new File("server_storage/anh-chua-van-ban.png"); // chuẩn bị sample
+        File png = new File("support_test/anh-chua-van-ban.png"); // chuẩn bị sample
         assertTrue(png.exists(), "tệp PNG mẫu phải tồn tại");
         String text = extractor.extractContent(png);
         assertNotNull(text, "văn bản trích xuất không được null");
