@@ -15,7 +15,7 @@ public class DocumentMapping {
         }
 
         return new org.bson.Document()
-            .append("_id", document.id == null ? null : document.id.toString())
+            .append("_id", document.id == null ? null : document.id)
                 .append("applicantName", document.applicantName)
                 .append("applicantEmail", document.applicantEmail)
                 .append("applicantPhone", document.applicantPhone)

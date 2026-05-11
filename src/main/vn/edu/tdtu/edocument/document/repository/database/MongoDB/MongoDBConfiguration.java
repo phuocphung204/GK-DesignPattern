@@ -1,11 +1,14 @@
 package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
+import org.bson.UuidRepresentation;
 
 public class MongoDBConfiguration {
     private final MongoClient mongoClient;
@@ -26,7 +29,14 @@ public class MongoDBConfiguration {
                     "MongoDB is not configured. Set MONGODB_CONNECTION_STRING and MONGODB_DATABASE_NAME (env vars, .env, or -D properties).");
         }
 
-        mongoClient = MongoClients.create(connectionString);
+        ConnectionString cs = new ConnectionString(connectionString);
+        MongoClientSettings settings = MongoClientSettings.builder()
+            .applyConnectionString(cs)
+            // Ensure java.util.UUID is encoded/decoded as BSON UUID (Binary subtype 4).
+            .uuidRepresentation(UuidRepresentation.STANDARD)
+            .build();
+
+        mongoClient = MongoClients.create(settings);
         database = mongoClient.getDatabase(databaseName);
     }
 

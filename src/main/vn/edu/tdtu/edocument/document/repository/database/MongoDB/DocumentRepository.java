@@ -28,7 +28,7 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public Document GetDocumentById(UUID id) {
-        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
+        var filter = new org.bson.Document("_id", id);
         var doc = collection.find(filter).first();
         if (doc == null) {
             return null;
@@ -62,7 +62,7 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public void UpdateDocument(Document doc) {
-        var filter = new org.bson.Document("_id", doc == null || doc.id == null ? null : doc.id.toString());
+        var filter = new org.bson.Document("_id", doc == null ? null : doc.id);
         var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
         bsonDoc.remove("_id");
         var update = new org.bson.Document("$set", bsonDoc);
@@ -70,7 +70,7 @@ public class DocumentRepository implements IRepository {
     }
 
     public boolean existById(UUID id) {
-        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
+        var filter = new org.bson.Document("_id", id);
         var doc = collection.find(filter).first();
         return doc != null;
     }
@@ -90,7 +90,7 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public void DeleteDocument(UUID id) {
-        var filter = new org.bson.Document("_id", id == null ? null : id.toString());
+        var filter = new org.bson.Document("_id", id);
         collection.deleteOne(filter);
     }
 }
