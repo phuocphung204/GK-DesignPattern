@@ -15,6 +15,11 @@ import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
+import vn.edu.tdtu.edocument.document.repository.IRepository;
+import vn.edu.tdtu.edocument.service.DocumentProcessor;
+
+import java.util.List;
+import java.util.UUID;
 
 public class DocumentBuilderTest {
 
@@ -135,5 +140,119 @@ public class DocumentBuilderTest {
         assertNull(restoredDraft.officerName);
         assertNull(restoredDraft.officerEmail);
         assertNull(restoredDraft.officerPhone);
+    }
+
+    @Test
+    @DisplayName("shouldPreservePreviousInformationWhenAddingNewStep")
+    void shouldPreservePreviousInformationWhenAddingNewStep() {
+        documentBuilder = new DocumentBuilder();
+
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        Document step1 = documentBuilder.Build();
+        assertEquals(applicantName, step1.applicantName);
+        assertEquals(applicantEmail, step1.applicantEmail);
+        assertEquals(applicantPhone, step1.applicantPhone);
+
+        documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
+        Document step2 = documentBuilder.Build();
+
+        // Personal info should remain intact after setting file info.
+        assertEquals(applicantName, step2.applicantName);
+        assertEquals(applicantEmail, step2.applicantEmail);
+        assertEquals(applicantPhone, step2.applicantPhone);
+
+        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
+        Document step3 = documentBuilder.Build();
+
+        // File info + personal info should remain intact after setting submission info.
+        assertEquals(applicantName, step3.applicantName);
+        assertEquals(applicantEmail, step3.applicantEmail);
+        assertEquals(applicantPhone, step3.applicantPhone);
+        assertEquals(documentType, step3.documentType);
+        assertEquals(filePath, step3.filePath);
+        assertEquals(fileExtension, step3.fileExtension);
+        assertEquals(fileSizeKB, step3.fileSizeKB);
+        assertEquals(digitalSignature, step3.digitalSignature);
+    }
+
+    @Test
+    @DisplayName("shouldAllowPartialDocumentCreation")
+    void shouldAllowPartialDocumentCreation() {
+        documentBuilder = new DocumentBuilder();
+
+        // Only personal info is filled.
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        Document partial = documentBuilder.Build();
+
+        assertNotNull(partial);
+        assertNotNull(partial.id);
+
+        // Fields of later steps are still allowed to be null.
+        assertNull(partial.officerName);
+        assertNull(partial.officerEmail);
+        assertNull(partial.officerPhone);
+        assertNull(partial.filePath);
+        assertNull(partial.fileExtension);
+    }
+
+    @Test
+    @DisplayName("shouldRejectSubmissionWhenRequiredFieldsMissing")
+    void shouldRejectSubmissionWhenRequiredFieldsMissing() {
+        IRepository noopRepo = new IRepository() {
+            @Override
+            public boolean ExistsByHash(String hash) {
+                return false;
+            }
+
+            @Override
+            public Document GetDocumentById(UUID id) {
+                return null;
+            }
+
+            @Override
+            public Document GetLatestDraftOrUploaded() {
+                return null;
+            }
+
+            @Override
+            public List<Document> GetAllDocuments() {
+                return List.of();
+            }
+
+            @Override
+            public void CreateDocument(Document doc) {
+                // no-op
+            }
+
+            @Override
+            public void UpdateDocument(Document doc) {
+                // no-op
+            }
+
+            @Override
+            public void CreateOrUpdateDocument(Document doc) {
+                // no-op
+            }
+
+            @Override
+            public void DeleteDocument(UUID id) {
+                // no-op
+            }
+        };
+
+        DocumentProcessor processor = new DocumentProcessor(noopRepo);
+
+        documentBuilder = new DocumentBuilder();
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
+        Document draft = documentBuilder.Build();
+
+        // Missing required submission fields (must be empty string rather than null to avoid NPE in current logic).
+        draft.officerName = "";
+        draft.officerEmail = "";
+        draft.officerPhone = "";
+
+        boolean ok = processor.proccessInsertSubmissionInfo(draft);
+        assertFalse(ok, "Submission should be rejected when officer info is missing");
     }
 }
