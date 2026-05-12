@@ -12,6 +12,7 @@ import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
 public class ValidationPipelineTest {
     private IRepository _repository = RepositoryFactory.createRepository(RepositoryType.MONGODB);
@@ -36,7 +37,7 @@ public class ValidationPipelineTest {
         // Arrange: Tạo một tài liệu mẫu với thông tin đầy đủ và hợp lệ
         documentBuilder = new DocumentBuilder();
         // Step 1: Nhập thông tin cá nhân, sau đó thực hiện kiểm tra thông tin cá nhân
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         Document draft1 = documentBuilder.Build();
         boolean result1 = _processor.proccessInsertPersonalInfo(draft1);
 
@@ -46,7 +47,7 @@ public class ValidationPipelineTest {
         boolean result2 = _processor.proccessInsertDocumentFile(draft2);
 
         // Step 3: Nhập thông tin người tiếp nhận và thực hiện kiểm tra
-        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
+        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, NotificationChannelType.defaultPreference());
         Document draft3 = documentBuilder.Build();
         boolean result3 = _processor.proccessInsertSubmissionInfo(draft3);
 

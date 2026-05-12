@@ -17,6 +17,7 @@ import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
 import java.util.List;
 import java.util.UUID;
@@ -59,7 +60,7 @@ public class DocumentBuilderTest {
         documentBuilder = new DocumentBuilder();
         // Step 1: Ban đầu, bản nháp mới chỉ có thông tin người nộp, các trường khác sẽ
         // được điền dần qua các bước
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         Document draft_1 = documentBuilder.Build();
         assertEquals(applicantName, draft_1.applicantName);
         assertEquals(applicantEmail, draft_1.applicantEmail);
@@ -77,7 +78,7 @@ public class DocumentBuilderTest {
 
         // Step 3: Cuối cùng, sau khi điền thông tin người tiếp nhận, bản nháp sẽ hoàn
         // chỉnh và có thể được nộp
-        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
+        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, NotificationChannelType.defaultPreference());
         Document draft_3 = documentBuilder.Build();
         assertEquals(officerName, draft_3.officerName);
         assertEquals(officerEmail, draft_3.officerEmail);
@@ -91,7 +92,7 @@ public class DocumentBuilderTest {
         // Arrange
         documentBuilder = new DocumentBuilder();
 
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
 
         documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
 
@@ -128,7 +129,7 @@ public class DocumentBuilderTest {
     void shouldPreservePreviousInformationWhenAddingNewStep() {
         documentBuilder = new DocumentBuilder();
 
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         Document step1 = documentBuilder.Build();
         assertEquals(applicantName, step1.applicantName);
         assertEquals(applicantEmail, step1.applicantEmail);
@@ -142,7 +143,7 @@ public class DocumentBuilderTest {
         assertEquals(applicantEmail, step2.applicantEmail);
         assertEquals(applicantPhone, step2.applicantPhone);
 
-        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
+        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, NotificationChannelType.defaultPreference());
         Document step3 = documentBuilder.Build();
 
         // File info + personal info should remain intact after setting submission info.
@@ -162,7 +163,7 @@ public class DocumentBuilderTest {
         documentBuilder = new DocumentBuilder();
 
         // Only personal info is filled.
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         Document partial = documentBuilder.Build();
 
         assertNotNull(partial);
@@ -219,7 +220,7 @@ public class DocumentBuilderTest {
         DocumentProcessor processor = new DocumentProcessor(noopRepo);
 
         documentBuilder = new DocumentBuilder();
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
         Document draft = documentBuilder.Build();
 

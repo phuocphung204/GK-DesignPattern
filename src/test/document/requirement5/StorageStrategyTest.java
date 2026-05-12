@@ -9,6 +9,7 @@ import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
 import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.repository.RepositoryFactory;
@@ -23,10 +24,12 @@ public class StorageStrategyTest {
 
 	private static Document buildSampleDocument(String marker) {
 		IDocumentBuilder builder = new DocumentBuilder();
-		builder.SetPersonalInfo("Applicant " + marker, ("applicant_" + marker + "@example.com"), "0123456789");
+		builder.SetPersonalInfo("Applicant " + marker, ("applicant_" + marker + "@example.com"), "0123456789",
+				NotificationChannelType.defaultPreference());
 		builder.SetFileInfo(DocumentTypes.BAO_CAO, "server_storage" + java.io.File.separator + marker + "_dummy.txt",
 				"TXT", 1, "signature-" + marker);
-		builder.SetSubmissionInfo("Officer " + marker, ("officer_" + marker + "@example.com"), "0987654321");
+		builder.SetSubmissionInfo("Officer " + marker, ("officer_" + marker + "@example.com"), "0987654321",
+				NotificationChannelType.defaultPreference());
 		Document doc = builder.Build();
 		doc.extractedContent = "content-" + marker;
 		doc.extractedContentHash = "hash-" + marker;

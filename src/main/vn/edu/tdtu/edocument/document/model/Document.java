@@ -1,9 +1,12 @@
 package vn.edu.tdtu.edocument.document.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
 public class Document {
     public UUID id;
@@ -21,7 +24,8 @@ public class Document {
     public String extractedContent;
     public String extractedContentHash;
     public DocumentStatus status;
-    public UserPreference userPreference;
+    public List<NotificationChannelType> applicantPreference = new ArrayList<>();
+    public List<NotificationChannelType> officerPreference = new ArrayList<>();
 
     public Document(UUID id,
             String applicantName,
@@ -38,7 +42,8 @@ public class Document {
             String extractedContent,
             String extractedContentHash,
             DocumentStatus status,
-            UserPreference userPreference) {
+            List<NotificationChannelType> applicantPreference,
+            List<NotificationChannelType> officerPreference) {
         this.id = id;
         this.applicantName = applicantName;
         this.applicantEmail = applicantEmail;
@@ -54,7 +59,8 @@ public class Document {
         this.extractedContent = extractedContent;
         this.extractedContentHash = extractedContentHash;
         this.status = status;
-        this.userPreference = userPreference;
+        this.applicantPreference = applicantPreference;
+        this.officerPreference = officerPreference;
     }
 
     public Document(UUID id,
@@ -73,13 +79,14 @@ public class Document {
             DocumentStatus status) {
         this(id, applicantName, applicantEmail, applicantPhone, officerName, officerEmail, officerPhone, documentType,
                 filePath, fileExtension, fileSizeKB, digitalSignature, extractedContent, null, status,
-                UserPreference.defaultPreference());
+                NotificationChannelType.defaultPreference(), NotificationChannelType.defaultPreference());
     }
 
     public Document(UUID id) {
         this.id = id;
         this.status = DocumentStatus.KHONG_XAC_DINH;
-        this.userPreference = UserPreference.defaultPreference();
+        this.applicantPreference = NotificationChannelType.defaultPreference();
+        this.officerPreference = NotificationChannelType.defaultPreference();
     }
 
     @Override

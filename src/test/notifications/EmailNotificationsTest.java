@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import vn.edu.tdtu.edocument.document.model.*;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 import vn.edu.tdtu.edocument.notification.impl.BrevoEmailNotification;
 
 public class EmailNotificationsTest {
@@ -41,7 +43,8 @@ public class EmailNotificationsTest {
                 "noi dung",
                 "hash",
                 DocumentStatus.DANG_XET_DUYET,
-                new UserPreference(true, false, false));
+                List.of(NotificationChannelType.EMAIL),
+                List.of());
 
         String output = captureOutput(() -> new BrevoEmailNotification().update(doc));
         logger.info("Captured output: " + output);
@@ -53,7 +56,8 @@ public class EmailNotificationsTest {
     public void testEmailNotificationDisabled() {
         var randomUUID = UUID.randomUUID();
         Document doc = new Document(randomUUID);
-        doc.userPreference = new UserPreference(false, true, false);
+        doc.applicantPreference = List.of();
+        doc.officerPreference = List.of();
 
         String output = captureOutput(() -> new BrevoEmailNotification().update(doc));
 

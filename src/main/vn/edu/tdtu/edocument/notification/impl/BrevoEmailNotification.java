@@ -12,8 +12,9 @@ import org.json.JSONObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.UserPreference;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
+import java.util.List;
 
 public class BrevoEmailNotification implements NotificationObserver {
     private static final String API_URL = "https://api.brevo.com/v3/smtp/email";
@@ -67,8 +68,8 @@ public class BrevoEmailNotification implements NotificationObserver {
         if (doc == null) {
             return false;
         }
-        UserPreference preference = doc.userPreference;
-        return preference != null && preference.receiveEmail;
+        return contains(doc.applicantPreference, NotificationChannelType.EMAIL)
+                || contains(doc.officerPreference, NotificationChannelType.EMAIL);
     }
 
     private static void logFallback(Document doc, String reason) {
@@ -81,8 +82,10 @@ public class BrevoEmailNotification implements NotificationObserver {
 
     private static String buildRequestBody(Document doc, BrevoConfig config) {
         JSONArray messageVersions = new JSONArray();
-        appendVersion(messageVersions, doc, "Nguoi nop", doc.applicantName, doc.applicantEmail);
-        appendVersion(messageVersions, doc, "Can bo xu ly", doc.officerName, doc.officerEmail);
+        appendVersion(messageVersions, doc, "Nguoi nop", doc.applicantName, doc.applicantEmail,
+            contains(doc.applicantPreference, NotificationChannelType.EMAIL));
+        appendVersion(messageVersions, doc, "Can bo xu ly", doc.officerName, doc.officerEmail,
+            contains(doc.officerPreference, NotificationChannelType.EMAIL));
 
         if (messageVersions.isEmpty()) {
             return null;
@@ -99,8 +102,9 @@ public class BrevoEmailNotification implements NotificationObserver {
         return body.toString();
     }
 
-    private static void appendVersion(JSONArray versions, Document doc, String role, String name, String email) {
-        if (isBlank(email)) {
+    private static void appendVersion(JSONArray versions, Document doc, String role, String name, String email,
+            boolean enabled) {
+        if (!enabled || isBlank(email)) {
             return;
         }
         JSONObject recipient = new JSONObject().put("email", email).put("name", safe(name));
@@ -114,6 +118,10 @@ public class BrevoEmailNotification implements NotificationObserver {
 
     private static boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private static boolean contains(List<NotificationChannelType> preferences, NotificationChannelType type) {
+        return preferences != null && type != null && preferences.contains(type);
     }
 
     private static String safe(Object value) {

@@ -1,13 +1,17 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.document.builder.*;
+import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
+import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.*;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.io.File;
 import java.util.EnumMap;
 import java.util.Locale;
@@ -227,7 +231,7 @@ public class AddDocumentWizardDialog extends JDialog {
         channelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         for (NotificationChannelType type : NotificationChannelType.values()) {
-            JCheckBox checkBox = new JCheckBox(type.getDisplayName(), true);
+            JCheckBox checkBox = new JCheckBox(type.getDisplayName(), NotificationChannelType.defaultPreference().contains(type));
             target.put(type, checkBox);
             channelPanel.add(checkBox);
         }
@@ -342,10 +346,12 @@ public class AddDocumentWizardDialog extends JDialog {
             String name = txtApplicantName.getText().trim();
             String email = txtApplicantEmail.getText().trim();
             String phone = txtApplicantPhone.getText().trim();
+            List<NotificationChannelType> applicantPreference = applicantNotificationChannels.entrySet().stream()
+                    .filter(e -> e.getValue().isSelected()).map(e -> e.getKey()).toList();
 
             // Tạo builder tạm thời để kiểm tra thông tin cá nhân, không cần lưu vào builder
             // chính thức nếu chưa qua bước xác thực file
-            docBuilder.SetPersonalInfo(name, email, phone);
+            docBuilder.SetPersonalInfo(name, email, phone, applicantPreference);
             // Kiểm tra thông tin cá nhân đã nhập, nếu thiếu sẽ không cho phép qua bước tiếp
             // theo
             boolean isValid = processor.proccessInsertPersonalInfo(docBuilder.Build());
@@ -395,9 +401,11 @@ public class AddDocumentWizardDialog extends JDialog {
         String officerName = txtOfficerName.getText().trim();
         String officerEmail = txtOfficerEmail.getText().trim();
         String officerPhone = txtOfficerPhone.getText().trim();
+        List<NotificationChannelType> officerPreference = officerNotificationChannels.entrySet().stream()
+            .filter(e -> e.getValue().isSelected()).map(e -> e.getKey()).toList();
         // Tạo builder hoàn chỉnh với tất cả thông tin đã nhập, bao gồm cả thông tin cán
         // bộ xử lý
-        docBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone);
+        docBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, officerPreference);
         Document doc = docBuilder.Build();
         // Xử lý thông tin nộp hồ sơ, nếu có lỗi sẽ không hoàn thành wizard và sẽ hiển
         // thị lỗi

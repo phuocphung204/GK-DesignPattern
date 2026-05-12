@@ -12,6 +12,7 @@ import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
 public class FileValidationHandlerTest {
     private IRepository _repository = RepositoryFactory.createRepository(RepositoryType.MONGODB);
@@ -36,7 +37,7 @@ public class FileValidationHandlerTest {
         // Arrange: Tạo một tài liệu mẫu với thông tin cá nhân hợp lệ nhưng tệp đính kèm
         // không hợp lệ (ví dụ: kích thước quá lớn)
         documentBuilder = new DocumentBuilder();
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone);
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
         Document draft1 = documentBuilder.Build();
         boolean result1 = _processor.proccessInsertPersonalInfo(draft1);
 

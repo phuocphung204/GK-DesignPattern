@@ -1,9 +1,11 @@
 package vn.edu.tdtu.edocument.document.builder;
 
+import java.util.List;
 import java.util.UUID;
 
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.*;
+import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
 public class DocumentBuilder implements IDocumentBuilder {
     private Document _result;
@@ -23,10 +25,11 @@ public class DocumentBuilder implements IDocumentBuilder {
     }
 
     @Override
-    public void SetPersonalInfo(String name, String email, String phone) {
+    public void SetPersonalInfo(String name, String email, String phone, List<NotificationChannelType> applicantPreference) {
         _result.applicantName = name;
         _result.applicantEmail = email;
         _result.applicantPhone = phone;
+        _result.applicantPreference = applicantPreference;
     }
 
     @Override
@@ -39,10 +42,11 @@ public class DocumentBuilder implements IDocumentBuilder {
     }
 
     @Override
-    public void SetSubmissionInfo(String name, String email, String phone) {
+    public void SetSubmissionInfo(String name, String email, String phone, List<NotificationChannelType> officerPreference) {
         _result.officerName = name;
         _result.officerEmail = email;
         _result.officerPhone = phone;
+        _result.officerPreference = officerPreference;
     }
 
     @Override
