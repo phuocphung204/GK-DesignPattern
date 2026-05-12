@@ -23,11 +23,9 @@ import java.util.UUID;
 public class AWSRepository implements IRepository {
     private static final AWSRepository INSTANCE = new AWSRepository(AWSConfiguration.getInstance());
 
-    private final AWSConfiguration config;
     private final String storageDir;
 
     private AWSRepository(AWSConfiguration config) {
-        this.config = config;
         // Fake "bucket" folder name to keep data separate from other repositories.
         String bucket = safePathSegment(config == null ? null : config.getBucketName());
         String base = "aws_storage";
@@ -190,7 +188,4 @@ public class AWSRepository implements IRepository {
         }
     }
 
-    public AWSConfiguration getConfig() {
-        return config;
-    }
 }

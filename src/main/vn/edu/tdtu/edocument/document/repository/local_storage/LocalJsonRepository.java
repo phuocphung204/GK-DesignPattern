@@ -35,6 +35,7 @@ public class LocalJsonRepository implements IRepository {
         return _instance;
     }
 
+    @Override
     public boolean ExistsByHash(String hash) {
         if (hash == null || hash.isBlank()) {
             return false;
@@ -44,7 +45,7 @@ public class LocalJsonRepository implements IRepository {
                 && doc.extractedContentHash != null
                 && hash.equals(doc.extractedContentHash));
     }
-
+    @Override
     public Document GetDocumentById(UUID id) {
         // Implementation to read JSON file and return Document object by ID
         String storageDirPath = STORAGE_DIR;
@@ -61,7 +62,7 @@ public class LocalJsonRepository implements IRepository {
         }
         return null; // Placeholder
     }
-
+    @Override
     public List<Document> GetAllDocuments() {
         // Implementation to read all JSON files in the storage directory and return a list of Document objects
         String storageDirPath = STORAGE_DIR;
@@ -88,7 +89,7 @@ public class LocalJsonRepository implements IRepository {
         }
         return documents;
     }
-
+    @Override
     public Document GetLatestDraft() {
         String storageDirPath = STORAGE_DIR;
         File storageDir = new File(storageDirPath);
