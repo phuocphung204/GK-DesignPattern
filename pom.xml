@@ -186,6 +186,6 @@
       <artifactId>mongodb-driver-sync</artifactId>
     </dependency>
 
-  </dependencies>
+  </dependencies> 
 
 </project>

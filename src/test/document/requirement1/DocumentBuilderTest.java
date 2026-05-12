@@ -1,4 +1,4 @@
-package src.test.document.requirement1;
+package document.requirement1;
 
 import static org.junit.jupiter.api.Assertions.*;
 

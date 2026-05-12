@@ -1,4 +1,4 @@
-package src.test.document.requirement5;
+package document.requirement5;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
