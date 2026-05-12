@@ -12,6 +12,5 @@ public interface IRepository {
     List <Document> GetAllDocuments();
     void CreateDocument(Document doc);
     void UpdateDocument(Document doc);
-    void CreateOrUpdateDocument(Document doc);
     void DeleteDocument(UUID id);
 }

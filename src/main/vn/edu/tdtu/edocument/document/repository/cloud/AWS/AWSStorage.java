@@ -5,6 +5,7 @@ import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.repository.FileStorageHelper;
 import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.repository.local_storage.DocumentMapping;
+import vn.edu.tdtu.edocument.document.repository.RepositoryException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -51,7 +52,7 @@ public class AWSStorage implements IRepository {
             return null;
         }
         // Prevent accidental path traversal; keep it simple for the fake implementation.
-        return segment.replace("/", "_").replace("\\\\", "_").trim();
+        return segment.replace("/", "_").replace("\\", "_").trim();
     }
 
     private void ensureStorageDir() {
@@ -61,21 +62,15 @@ public class AWSStorage implements IRepository {
         }
     }
 
-    private boolean existsById(UUID id) {
-        if (id == null) {
-            return false;
-        }
-        return dataFile(id).exists();
-    }
-
     @Override
     public boolean ExistsByHash(String hash) {
         if (hash == null || hash.isBlank()) {
             return false;
         }
         List<Document> allDocs = GetAllDocuments();
-        return allDocs.stream()
-                .anyMatch(doc -> hash.equals(doc.extractedContentHash) && doc.status != DocumentStatus.DA_TAI_FILE);
+        return allDocs.stream().anyMatch(doc -> doc != null
+                && doc.extractedContentHash != null
+                && hash.equals(doc.extractedContentHash));
     }
 
     @Override
@@ -88,8 +83,7 @@ public class AWSStorage implements IRepository {
             String json = Files.readString(file.toPath());
             return DocumentMapping.mapJsonToDocument(json);
         } catch (IOException e) {
-            System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu (AWS fake): " + e.getMessage());
-            return null;
+            throw new RepositoryException("Thất bại khi đọc hồ sơ với ID: " + id + " từ lưu trữ AWS", e);
         }
     }
 
@@ -124,7 +118,7 @@ public class AWSStorage implements IRepository {
                     latestDoc = doc;
                 }
             } catch (IOException e) {
-                System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu (AWS fake): " + e.getMessage());
+                throw new RepositoryException("Thất bại khi đọc dữ liệu (AWS fake): " + e.getMessage(), e);
             }
         }
 
@@ -153,7 +147,7 @@ public class AWSStorage implements IRepository {
                     documents.add(doc);
                 }
             } catch (IOException e) {
-                System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu (AWS fake): " + e.getMessage());
+                throw new RepositoryException("Thất bại khi đọc dữ liệu (AWS fake): " + e.getMessage(), e);
             }
         }
 
@@ -176,7 +170,7 @@ public class AWSStorage implements IRepository {
                 writer.write(json == null ? "" : json);
             }
         } catch (IOException e) {
-            System.out.println("[LỖI HỆ THỐNG] Lỗi khi lưu trữ (AWS fake): " + e.getMessage());
+            throw new RepositoryException("Thất bại khi lưu trữ (AWS fake): " + e.getMessage(), e);
         }
     }
 
@@ -184,20 +178,6 @@ public class AWSStorage implements IRepository {
     public void UpdateDocument(Document doc) {
         // For the fake implementation, update is the same as write.
         CreateDocument(doc);
-    }
-
-    @Override
-    public void CreateOrUpdateDocument(Document doc) {
-        if (doc == null || doc.id == null) {
-            System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
-            return;
-        }
-
-        if (existsById(doc.id)) {
-            UpdateDocument(doc);
-        } else {
-            CreateDocument(doc);
-        }
     }
 
     @Override

@@ -230,11 +230,6 @@ public class DocumentBuilderTest {
             }
 
             @Override
-            public void CreateOrUpdateDocument(Document doc) {
-                // no-op
-            }
-
-            @Override
             public void DeleteDocument(UUID id) {
                 // no-op
             }

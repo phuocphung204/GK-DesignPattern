@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
+import vn.edu.tdtu.edocument.document.repository.RepositoryException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,33 +35,14 @@ public class JsonStorage implements IRepository {
         return _instance;
     }
 
-    public boolean ExistsById(UUID id) {
-        if (id == null)
-            return false;
-        String storageDirPath = STORAGE_DIR;
-        File dataFile = new File(storageDirPath + File.separator + storageKey(id) + "_data.json");
-        return dataFile.exists();
-    }
-
-    @Override
-    public void CreateOrUpdateDocument(Document doc) {
-        if (doc == null || doc.id == null) {
-            System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
-            return;
-        }
-        if (ExistsById(doc.id)) {
-            UpdateDocument(doc);
-        } else {
-            CreateDocument(doc);
-        }
-    }
-
     public boolean ExistsByHash(String hash) {
-        if (hash == null || hash.isBlank()) 
+        if (hash == null || hash.isBlank()) {
             return false;
+        }
         List<Document> allDocs = GetAllDocuments();
-        return allDocs.stream()
-            .anyMatch(doc -> hash.equals(doc.extractedContentHash) && doc.status != DocumentStatus.DA_TAI_FILE);
+        return allDocs.stream().anyMatch(doc -> doc != null
+                && doc.extractedContentHash != null
+                && hash.equals(doc.extractedContentHash));
     }
 
     public Document GetDocumentById(UUID id) {
@@ -72,7 +54,7 @@ public class JsonStorage implements IRepository {
                 String json = new String(Files.readAllBytes(dataFile.toPath()));
                 return DocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
             } catch (IOException e) {
-                System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu: " + e.getMessage());
+                throw new RepositoryException("Thất bại khi đọc hồ sơ với ID: " + id + " từ lưu trữ JSON", e);
             }
         } else {
             System.out.println("[THÔNG BÁO] Không tìm thấy hồ sơ với ID: " + id);
@@ -96,8 +78,8 @@ public class JsonStorage implements IRepository {
                         if (doc != null) {
                             documents.add(doc);
                         }
-                    } catch (IOException e) {
-                        System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu: " + e.getMessage());
+                    } catch (IOException ex) {
+                        throw new RepositoryException("Thất bại khi đọc hồ sơ từ tệp: " + dataFile.getName(), ex);
                     }
                 }
             }
@@ -138,7 +120,7 @@ public class JsonStorage implements IRepository {
                     latestDoc = doc;
                 }
             } catch (IOException e) {
-                System.out.println("[LỖI HỆ THỐNG] Lỗi khi đọc dữ liệu: " + e.getMessage());
+                throw new RepositoryException("Thất bại khi đọc dữ liệu (JSON): " + e.getMessage(), e);
             }
         }
 
@@ -166,8 +148,8 @@ public class JsonStorage implements IRepository {
                 writer.write(json == null ? "" : json);
             }
 
-        } catch (IOException e) {
-            System.out.println("[LỖI HỆ THỐNG] Lỗi khi lưu trữ vật lý: " + e.getMessage());
+        } catch (IOException ex) {
+            throw new RepositoryException("Thất bại khi tạo hồ sơ với ID: " + doc.id + " trong lưu trữ JSON", ex);
         }
     }
 
@@ -191,8 +173,8 @@ public class JsonStorage implements IRepository {
                 writer.write(json == null ? "" : json);
             }
 
-        } catch (IOException e) {
-            System.out.println("[LỖI HỆ THỐNG] Lỗi khi lưu trữ vật lý: " + e.getMessage());
+        } catch (IOException ex) {
+            throw new RepositoryException("Thất bại khi cập nhật hồ sơ với ID: " + doc.id + " trong lưu trữ JSON", ex);
         }
     }
 

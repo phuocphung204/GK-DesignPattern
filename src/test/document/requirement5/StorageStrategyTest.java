@@ -17,6 +17,8 @@ import vn.edu.tdtu.edocument.service.DocumentProcessor;
 import java.util.List;
 import java.util.UUID;
 
+import javax.print.Doc;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StorageStrategyTest {
@@ -64,7 +66,13 @@ public class StorageStrategyTest {
 		Document doc = buildSampleDocument("local-" + UUID.randomUUID());
 
 		try {
-			repo.CreateOrUpdateDocument(doc);
+			Document existing = repo.GetDocumentById(doc.id);
+			if (existing == null) {
+				repo.CreateDocument(doc);
+			}
+			else {
+				repo.UpdateDocument(doc);
+			}
 			Document loaded = repo.GetDocumentById(doc.id);
 
 			assertNotNull(loaded);
@@ -89,10 +97,11 @@ public class StorageStrategyTest {
 
 		Document doc = buildSampleDocument("mongo-" + UUID.randomUUID());
 		try {
-			try {
-				repo.CreateOrUpdateDocument(doc);
-			} catch (Exception ex) {
-				Assumptions.assumeTrue(false, "MongoDB insert failed (skipped): " + ex.getMessage());
+			Document existing = repo.GetDocumentById(doc.id);
+			if (existing == null) {
+				repo.CreateDocument(doc);
+			} else {
+				repo.UpdateDocument(doc);
 			}
 
 			Document loaded;
@@ -118,7 +127,12 @@ public class StorageStrategyTest {
 		Document doc = buildSampleDocument("aws-" + UUID.randomUUID());
 
 		try {
-			repo.CreateOrUpdateDocument(doc);
+			Document existing = repo.GetDocumentById(doc.id);
+			if (existing == null) {
+				repo.CreateDocument(doc);
+			} else {
+				repo.UpdateDocument(doc);
+			}
 			Document loaded = repo.GetDocumentById(doc.id);
 
 			assertNotNull(loaded);
@@ -193,11 +207,6 @@ public class StorageStrategyTest {
 			}
 
 			@Override
-			public void CreateOrUpdateDocument(Document doc) {
-				throw new IllegalStateException("Storage unavailable");
-			}
-
-			@Override
 			public void DeleteDocument(UUID id) {
 				throw new IllegalStateException("Storage unavailable");
 			}
@@ -219,8 +228,18 @@ public class StorageStrategyTest {
 		Document awsDoc = buildSampleDocument("load-aws-" + UUID.randomUUID());
 
 		try {
-			localRepo.CreateOrUpdateDocument(localDoc);
-			awsRepo.CreateOrUpdateDocument(awsDoc);
+			
+			if (localRepo.GetDocumentById(localDoc.id) == null) {
+				localRepo.CreateDocument(localDoc);
+			} else {
+				localRepo.UpdateDocument(localDoc);
+			}
+
+			if (awsRepo.GetDocumentById(awsDoc.id) == null) {
+				awsRepo.CreateDocument(awsDoc);
+			} else {
+				awsRepo.UpdateDocument(awsDoc);
+			}
 
 			// Selected storage = local
 			assertNotNull(localRepo.GetDocumentById(localDoc.id));
@@ -245,8 +264,17 @@ public class StorageStrategyTest {
 		Document awsDoc = buildSampleDocument("del-aws-" + UUID.randomUUID());
 
 		try {
-			localRepo.CreateOrUpdateDocument(localDoc);
-			awsRepo.CreateOrUpdateDocument(awsDoc);
+			if (localRepo.GetDocumentById(localDoc.id) == null) {
+				localRepo.CreateDocument(localDoc);
+			} else {
+				localRepo.UpdateDocument(localDoc);
+			}
+
+			if (awsRepo.GetDocumentById(awsDoc.id) == null) {
+				awsRepo.CreateDocument(awsDoc);
+			} else {
+				awsRepo.UpdateDocument(awsDoc);
+			}
 
 			assertNotNull(localRepo.GetDocumentById(localDoc.id));
 			assertNotNull(awsRepo.GetDocumentById(awsDoc.id));

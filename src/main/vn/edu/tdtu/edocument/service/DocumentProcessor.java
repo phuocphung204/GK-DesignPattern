@@ -189,7 +189,12 @@ public class DocumentProcessor {
     }
 
     private void saveToStorage(Document doc) {
-        _repository.CreateOrUpdateDocument(doc);
+        var existingDoc = _repository.GetDocumentById(doc.id);
+        if (existingDoc == null) {
+            _repository.CreateDocument(doc);
+        } else {
+            _repository.UpdateDocument(doc);
+        }
         // Sử dụng repository để lưu trữ hồ sơ, có thể là lưu vào file JSON hoặc cơ sở
         // dữ liệu tùy theo implementation của repository
         // Nếu Document đã tồn tại (lưu draft trước đó), repository sẽ cập nhật lại

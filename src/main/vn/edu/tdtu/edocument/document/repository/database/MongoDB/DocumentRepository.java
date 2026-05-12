@@ -1,15 +1,15 @@
 package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
 
+import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.repository.RepositoryException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
-
-import static com.mongodb.client.model.Filters.or;
 
 public class DocumentRepository implements IRepository {
 
@@ -21,6 +21,9 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public boolean ExistsByHash(String hash) {
+        if (hash == null || hash.isBlank()) {
+            return false;
+        }
         var filter = new org.bson.Document("extractedContentHash", hash);
         var doc = collection.find(filter).first();
         return doc != null;
@@ -38,10 +41,12 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public Document GetLatestDraftOrUploaded() {
-        var doc = collection.find(or(
-                new org.bson.Document("status", "BAN_NHAP"),
-                new org.bson.Document("status", "DA_TAI_FILE")
-        )).first();
+        // No explicit timestamp fields in the model; use MongoDB natural order as a best-effort "latest".
+        var filter = new org.bson.Document("status",
+            new org.bson.Document("$in", List.of("BAN_NHAP", "DA_TAI_FILE")));
+        var doc = collection.find(filter)
+            .sort(new org.bson.Document("$natural", -1))
+            .first();
         if (doc == null) {
             return null;
         }
@@ -56,41 +61,34 @@ public class DocumentRepository implements IRepository {
 
     @Override
     public void CreateDocument(Document doc) {
-        var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
-        collection.insertOne(bsonDoc);
+        try {
+            var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
+            collection.insertOne(bsonDoc);
+        } catch (MongoException ex) {
+            throw new RepositoryException("Thất bại khi tạo hồ sơ với ID: " + doc.id + " trong MongoDB", ex);
+        }
     }
 
     @Override
     public void UpdateDocument(Document doc) {
-        var filter = new org.bson.Document("_id", doc == null ? null : doc.id);
-        var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
-        bsonDoc.remove("_id");
-        var update = new org.bson.Document("$set", bsonDoc);
-        collection.updateOne(filter, update);
-    }
-
-    public boolean existById(UUID id) {
-        var filter = new org.bson.Document("_id", id);
-        var doc = collection.find(filter).first();
-        return doc != null;
-    }
-
-    @Override
-    public void CreateOrUpdateDocument(Document doc) {
-        if (doc == null || doc.id == null) {
-            System.out.println("[LỖI HỆ THỐNG] Hồ sơ không hợp lệ.");
-            return;
-        }
-        if (!existById(doc.id)) {
-            CreateDocument(doc);
-        } else {
-            UpdateDocument(doc);
+        try {
+            var filter = new org.bson.Document("_id", doc == null ? null : doc.id);
+            var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
+            bsonDoc.remove("_id");
+            var update = new org.bson.Document("$set", bsonDoc);
+            collection.updateOne(filter, update);
+        } catch (MongoException ex) {
+            throw new RepositoryException("Thất bại khi cập nhật hồ sơ với ID: " + doc.id + " trong MongoDB", ex);
         }
     }
 
     @Override
     public void DeleteDocument(UUID id) {
-        var filter = new org.bson.Document("_id", id);
-        collection.deleteOne(filter);
+        try {
+            var filter = new org.bson.Document("_id", id);
+            collection.deleteOne(filter);
+        } catch (MongoException ex) {
+            throw new RepositoryException("Thất bại khi xóa hồ sơ với ID: " + id + " trong MongoDB", ex);
+        }
     }
 }
