@@ -200,7 +200,7 @@ public class AddDocumentWizardDialog extends JDialog {
 
     private Document fetchLatestDraft() {
         // Lấy bản nháp gần nhất từ repository, nếu có
-        return _repository.GetLatestDraftOrUploaded();
+        return _repository.GetLatestDraft();
     }
 
     private void populateFromDraft(Document draft) {

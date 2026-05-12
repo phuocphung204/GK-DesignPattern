@@ -1,10 +1,10 @@
 package vn.edu.tdtu.edocument.document.repository;
 
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
-import vn.edu.tdtu.edocument.document.repository.cloud.AWS.AWSStorage;
+import vn.edu.tdtu.edocument.document.repository.cloud.AWS.AWSRepository;
 import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBConfiguration;
-import vn.edu.tdtu.edocument.document.repository.database.MongoDB.DocumentRepository;
-import vn.edu.tdtu.edocument.document.repository.local_storage.JsonStorage;
+import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBDocumentRepository;
+import vn.edu.tdtu.edocument.document.repository.local_storage.LocalJsonRepository;
 
 public class RepositoryFactory {
     public static IRepository createRepository(RepositoryType type) {
@@ -13,7 +13,7 @@ public class RepositoryFactory {
                 try {
                     // Attempt to create MongoDB repository
                     MongoDBConfiguration mongoConfig = MongoDBConfiguration.getInstance();
-                    return new DocumentRepository(mongoConfig);
+                    return new MongoDBDocumentRepository(mongoConfig);
                 } catch (Exception e) {
                     System.err.println("[Factory] MongoDB configuration failed: " + e.getMessage());
                 }
@@ -21,13 +21,13 @@ public class RepositoryFactory {
             case AWS:
                 try {
                     // Fake AWS repository (stores JSON metadata under server_storage/aws)
-                    return AWSStorage.getInstance();
+                    return AWSRepository.getInstance();
                 } catch (Exception e) {
                     System.err.println("[Factory] AWS configuration failed: " + e.getMessage());
                 }
                 break;
             case JSON:
-                return JsonStorage.getInstance();
+                return LocalJsonRepository.getInstance();
         }
         throw new IllegalArgumentException("Unsupported repository type: " + type);
     }

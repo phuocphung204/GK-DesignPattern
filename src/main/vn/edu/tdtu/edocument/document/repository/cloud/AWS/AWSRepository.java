@@ -4,7 +4,6 @@ import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.repository.FileStorageHelper;
 import vn.edu.tdtu.edocument.document.repository.IRepository;
-import vn.edu.tdtu.edocument.document.repository.local_storage.DocumentMapping;
 import vn.edu.tdtu.edocument.document.repository.RepositoryException;
 
 import java.io.File;
@@ -21,13 +20,13 @@ import java.util.UUID;
  * This class simulates persisting documents to AWS (e.g., S3/DynamoDB) by writing
  * JSON metadata to a dedicated folder under server_storage.
  */
-public class AWSStorage implements IRepository {
-    private static final AWSStorage INSTANCE = new AWSStorage(AWSConfiguration.getInstance());
+public class AWSRepository implements IRepository {
+    private static final AWSRepository INSTANCE = new AWSRepository(AWSConfiguration.getInstance());
 
     private final AWSConfiguration config;
     private final String storageDir;
 
-    private AWSStorage(AWSConfiguration config) {
+    private AWSRepository(AWSConfiguration config) {
         this.config = config;
         // Fake "bucket" folder name to keep data separate from other repositories.
         String bucket = safePathSegment(config == null ? null : config.getBucketName());
@@ -35,7 +34,7 @@ public class AWSStorage implements IRepository {
         this.storageDir = (bucket == null || bucket.isBlank()) ? base : (base + File.separator + bucket);
     }
 
-    public static AWSStorage getInstance() {
+    public static AWSRepository getInstance() {
         return INSTANCE;
     }
 
@@ -52,7 +51,7 @@ public class AWSStorage implements IRepository {
             return null;
         }
         // Prevent accidental path traversal; keep it simple for the fake implementation.
-        return segment.replace("/", "_").replace("\\", "_").trim();
+        return segment.replace("/", "_").replace("\\\\", "_").trim();
     }
 
     private void ensureStorageDir() {
@@ -81,14 +80,14 @@ public class AWSStorage implements IRepository {
         }
         try {
             String json = Files.readString(file.toPath());
-            return DocumentMapping.mapJsonToDocument(json);
+            return AWSDocumentMapping.mapJsonToDocument(json);
         } catch (IOException e) {
             throw new RepositoryException("Thất bại khi đọc hồ sơ với ID: " + id + " từ lưu trữ AWS", e);
         }
     }
 
     @Override
-    public Document GetLatestDraftOrUploaded() {
+    public Document GetLatestDraft() {
         File dir = new File(storageDir);
         if (!dir.exists() || !dir.isDirectory()) {
             return null;
@@ -105,7 +104,7 @@ public class AWSStorage implements IRepository {
         for (File dataFile : files) {
             try {
                 String json = Files.readString(dataFile.toPath());
-                Document doc = DocumentMapping.mapJsonToDocument(json);
+                Document doc = AWSDocumentMapping.mapJsonToDocument(json);
                 if (doc == null) {
                     continue;
                 }
@@ -142,7 +141,7 @@ public class AWSStorage implements IRepository {
         for (File dataFile : files) {
             try {
                 String json = Files.readString(dataFile.toPath());
-                Document doc = DocumentMapping.mapJsonToDocument(json);
+                Document doc = AWSDocumentMapping.mapJsonToDocument(json);
                 if (doc != null) {
                     documents.add(doc);
                 }
@@ -164,7 +163,7 @@ public class AWSStorage implements IRepository {
         ensureStorageDir();
 
         try {
-            String json = DocumentMapping.mapDocumentToJson(doc);
+            String json = AWSDocumentMapping.mapDocumentToJson(doc);
             File target = dataFile(doc.id);
             try (FileWriter writer = new FileWriter(target)) {
                 writer.write(json == null ? "" : json);

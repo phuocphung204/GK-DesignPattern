@@ -8,7 +8,7 @@ import vn.edu.tdtu.edocument.document.model.Document;
 public interface IRepository {
     boolean ExistsByHash(String hash);
     Document GetDocumentById(UUID id);
-    Document GetLatestDraftOrUploaded();
+    Document GetLatestDraft();
     List <Document> GetAllDocuments();
     void CreateDocument(Document doc);
     void UpdateDocument(Document doc);

@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
 
-public class DocumentMapping {
+public class MongoDBDocumentMapping {
     public static org.bson.Document mapDocumentToBson(Document document) {
         if (document == null) {
             return null;

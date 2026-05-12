@@ -29,7 +29,7 @@ public class ValidationChainBehaviorTest {
         }
 
         @Override
-        public Document GetLatestDraftOrUploaded() {
+        public Document GetLatestDraft() {
             return null;
         }
 

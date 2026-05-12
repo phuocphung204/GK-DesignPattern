@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class JsonStorage implements IRepository {
+public class LocalJsonRepository implements IRepository {
     private static final String STORAGE_DIR = "server_storage";
-    private static final JsonStorage _instance = new JsonStorage(); // Singleton instance EAGER initialization
+    private static final LocalJsonRepository _instance = new LocalJsonRepository(); // Singleton instance EAGER initialization
 
     private static String storageKey(UUID id) {
         if (id == null) {
@@ -27,11 +27,11 @@ public class JsonStorage implements IRepository {
         return id.toString().substring(0, 8);
     }
 
-    private JsonStorage() {
+    private LocalJsonRepository() {
         // Private constructor to prevent instantiation
     }
     
-    public static JsonStorage getInstance() {
+    public static LocalJsonRepository getInstance() {
         return _instance;
     }
 
@@ -52,7 +52,7 @@ public class JsonStorage implements IRepository {
         if (dataFile.exists()) {
             try {
                 String json = new String(Files.readAllBytes(dataFile.toPath()));
-                return DocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
+                return LocalJsonDocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
             } catch (IOException e) {
                 throw new RepositoryException("Thất bại khi đọc hồ sơ với ID: " + id + " từ lưu trữ JSON", e);
             }
@@ -74,7 +74,7 @@ public class JsonStorage implements IRepository {
                 for (File dataFile : files) {
                     try {
                         String json = new String(Files.readAllBytes(dataFile.toPath()));
-                        Document doc = DocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
+                        Document doc = LocalJsonDocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
                         if (doc != null) {
                             documents.add(doc);
                         }
@@ -89,7 +89,7 @@ public class JsonStorage implements IRepository {
         return documents;
     }
 
-    public Document GetLatestDraftOrUploaded() {
+    public Document GetLatestDraft() {
         String storageDirPath = STORAGE_DIR;
         File storageDir = new File(storageDirPath);
         if (!storageDir.exists() || !storageDir.isDirectory()) {
@@ -107,7 +107,7 @@ public class JsonStorage implements IRepository {
         for (File dataFile : files) {
             try {
                 String json = new String(Files.readAllBytes(dataFile.toPath()));
-                Document doc = DocumentMapping.mapJsonToDocument(json);
+                Document doc = LocalJsonDocumentMapping.mapJsonToDocument(json);
                 if (doc == null) {
                     continue;
                 }
@@ -141,7 +141,7 @@ public class JsonStorage implements IRepository {
         }
 
         try {
-            String json = DocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
+            String json = LocalJsonDocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
 
             File dataFile = new File(storageDirPath + File.separator + storageKey(doc.id) + "_data.json");
             try (FileWriter writer = new FileWriter(dataFile)) {
@@ -167,7 +167,7 @@ public class JsonStorage implements IRepository {
         }
 
         try {
-            String json = DocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
+            String json = LocalJsonDocumentMapping.mapDocumentToJson(doc); // Convert Document object to JSON string
             File dataFile = new File(storageDirPath + File.separator + storageKey(doc.id) + "_data.json");
             try (FileWriter writer = new FileWriter(dataFile)) {
                 writer.write(json == null ? "" : json);

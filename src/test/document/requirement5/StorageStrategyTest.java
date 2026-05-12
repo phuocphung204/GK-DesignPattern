@@ -187,7 +187,7 @@ public class StorageStrategyTest {
 			}
 
 			@Override
-			public Document GetLatestDraftOrUploaded() {
+			public Document GetLatestDraft() {
 				throw new IllegalStateException("Storage unavailable");
 			}
 

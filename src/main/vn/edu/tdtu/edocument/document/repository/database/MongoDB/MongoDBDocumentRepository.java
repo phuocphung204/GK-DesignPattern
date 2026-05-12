@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
 
-public class DocumentRepository implements IRepository {
+public class MongoDBDocumentRepository implements IRepository {
 
     private final MongoCollection<org.bson.Document> collection;
 
-    public DocumentRepository(MongoDBConfiguration config) {
+    public MongoDBDocumentRepository(MongoDBConfiguration config) {
         this.collection = config.getCollection("documents");
     }
 
@@ -36,11 +36,11 @@ public class DocumentRepository implements IRepository {
         if (doc == null) {
             return null;
         }
-        return DocumentMapping.mapBsonToDocument(doc);
+        return MongoDBDocumentMapping.mapBsonToDocument(doc);
     }
 
     @Override
-    public Document GetLatestDraftOrUploaded() {
+    public Document GetLatestDraft() {
         // No explicit timestamp fields in the model; use MongoDB natural order as a best-effort "latest".
         var filter = new org.bson.Document("status",
             new org.bson.Document("$in", List.of("BAN_NHAP", "DA_TAI_FILE")));
@@ -50,19 +50,19 @@ public class DocumentRepository implements IRepository {
         if (doc == null) {
             return null;
         }
-        return DocumentMapping.mapBsonToDocument(doc);
+        return MongoDBDocumentMapping.mapBsonToDocument(doc);
     }
 
     @Override
     public List<Document> GetAllDocuments() {
         List<org.bson.Document> bsonDocs = collection.find().into(new ArrayList<>());
-        return bsonDocs.stream().map(DocumentMapping::mapBsonToDocument).collect(Collectors.toList());
+        return bsonDocs.stream().map(MongoDBDocumentMapping::mapBsonToDocument).collect(Collectors.toList());
     }
 
     @Override
     public void CreateDocument(Document doc) {
         try {
-            var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
+            var bsonDoc = MongoDBDocumentMapping.mapDocumentToBson(doc);
             collection.insertOne(bsonDoc);
         } catch (MongoException ex) {
             throw new RepositoryException("Thất bại khi tạo hồ sơ với ID: " + doc.id + " trong MongoDB", ex);
@@ -73,7 +73,7 @@ public class DocumentRepository implements IRepository {
     public void UpdateDocument(Document doc) {
         try {
             var filter = new org.bson.Document("_id", doc == null ? null : doc.id);
-            var bsonDoc = DocumentMapping.mapDocumentToBson(doc);
+            var bsonDoc = MongoDBDocumentMapping.mapDocumentToBson(doc);
             bsonDoc.remove("_id");
             var update = new org.bson.Document("$set", bsonDoc);
             collection.updateOne(filter, update);
