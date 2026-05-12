@@ -9,6 +9,7 @@ import vn.edu.tdtu.edocument.service.DocumentProcessor;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.EnumMap;
 import java.util.Locale;
 
 public class AddDocumentWizardDialog extends JDialog {
@@ -31,9 +32,8 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtApplicantEmail;
     private JTextField txtApplicantPhone;
 
-    private JCheckBox chkApplicantEmail;
-    private JCheckBox chkApplicantSMS;
-    private JCheckBox chkApplicantAppPush;
+        private final EnumMap<NotificationChannelType, JCheckBox> applicantNotificationChannels =
+            new EnumMap<>(NotificationChannelType.class);
 
     private JComboBox<DocumentTypes> cbDocumentType;
     private JTextField txtDigitalSignature;
@@ -44,9 +44,8 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtOfficerEmail;
     private JTextField txtOfficerPhone;
 
-    private JCheckBox chkOfficerEmail;
-    private JCheckBox chkOfficerSMS;
-    private JCheckBox chkOfficerAppPush;
+        private final EnumMap<NotificationChannelType, JCheckBox> officerNotificationChannels =
+            new EnumMap<>(NotificationChannelType.class);
 
     private JButton btnBack;
     private JButton btnNext;
@@ -120,18 +119,7 @@ public class AddDocumentWizardDialog extends JDialog {
         lblApplicantNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(lblApplicantNotify);
 
-        JPanel applicantPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        applicantPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        chkApplicantEmail = new JCheckBox("Email", true);
-        chkApplicantSMS = new JCheckBox("SMS", true);
-        chkApplicantAppPush = new JCheckBox("AppPush", true);
-
-        applicantPanel.add(chkApplicantEmail);
-        applicantPanel.add(chkApplicantSMS);
-        applicantPanel.add(chkApplicantAppPush);
-
-        formPanel.add(applicantPanel);
+        formPanel.add(buildNotificationChannelPanel(applicantNotificationChannels));
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
@@ -226,21 +214,24 @@ public class AddDocumentWizardDialog extends JDialog {
         lblOfficerNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(lblOfficerNotify);
 
-        JPanel officerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        officerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        chkOfficerEmail = new JCheckBox("Email", true);
-        chkOfficerSMS = new JCheckBox("SMS", true);
-        chkOfficerAppPush = new JCheckBox("AppPush", true);
-
-        officerPanel.add(chkOfficerEmail);
-        officerPanel.add(chkOfficerSMS);
-        officerPanel.add(chkOfficerAppPush);
-
-        formPanel.add(officerPanel);
+        formPanel.add(buildNotificationChannelPanel(officerNotificationChannels));
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
+    }
+
+    private JPanel buildNotificationChannelPanel(EnumMap<NotificationChannelType, JCheckBox> target) {
+        target.clear();
+        JPanel channelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        channelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        for (NotificationChannelType type : NotificationChannelType.values()) {
+            JCheckBox checkBox = new JCheckBox(type.getDisplayName(), true);
+            target.put(type, checkBox);
+            channelPanel.add(checkBox);
+        }
+
+        return channelPanel;
     }
 
     private JPanel buildFooter() {
