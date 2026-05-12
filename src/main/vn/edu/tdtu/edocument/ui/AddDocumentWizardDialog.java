@@ -16,6 +16,9 @@ public class AddDocumentWizardDialog extends JDialog {
     private static final String STEP_FILE = "FILE";
     private static final String STEP_CONFIRM = "CONFIRM";
 
+    private static final int FORM_PADDING = 16;
+    private static final int V_GAP = 8;
+
     private final DocumentProcessor processor;
     private final MainSwingUI parent;
     private final IRepository _repository;
@@ -28,6 +31,10 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtApplicantEmail;
     private JTextField txtApplicantPhone;
 
+    private JCheckBox chkApplicantEmail;
+    private JCheckBox chkApplicantSMS;
+    private JCheckBox chkApplicantAppPush;
+
     private JComboBox<DocumentTypes> cbDocumentType;
     private JTextField txtDigitalSignature;
     private JLabel lblFileName;
@@ -36,6 +43,10 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtOfficerName;
     private JTextField txtOfficerEmail;
     private JTextField txtOfficerPhone;
+
+    private JCheckBox chkOfficerEmail;
+    private JCheckBox chkOfficerSMS;
+    private JCheckBox chkOfficerAppPush;
 
     private JButton btnBack;
     private JButton btnNext;
@@ -51,8 +62,6 @@ public class AddDocumentWizardDialog extends JDialog {
         Document latestDraft = fetchLatestDraft();
         this.docBuilder = (latestDraft != null) ? new DocumentBuilder(latestDraft) : new DocumentBuilder();
 
-        setSize(520, 520);
-        setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
 
         cardPanel.add(buildPersonalPanel(), STEP_PERSONAL);
@@ -65,24 +74,64 @@ public class AddDocumentWizardDialog extends JDialog {
             populateFromDraft(latestDraft);
         }
         updateButtonState();
+
+        pack();
+        if (getWidth() < 520) {
+            setSize(new Dimension(520, getHeight()));
+        }
+        setLocationRelativeTo(parent);
     }
 
     private JPanel buildPersonalPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 8, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(FORM_PADDING, FORM_PADDING, FORM_PADDING, FORM_PADDING));
 
-        formPanel.add(new JLabel("Ten nguoi nop:"));
+        JLabel lblApplicantName = new JLabel("Ten nguoi nop:");
+        lblApplicantName.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblApplicantName);
         txtApplicantName = new JTextField();
+        txtApplicantName.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtApplicantName.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtApplicantName.getPreferredSize().height));
         formPanel.add(txtApplicantName);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("Email nguoi nop:"));
+        JLabel lblApplicantEmail = new JLabel("Email nguoi nop:");
+        lblApplicantEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblApplicantEmail);
         txtApplicantEmail = new JTextField();
+        txtApplicantEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtApplicantEmail.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtApplicantEmail.getPreferredSize().height));
         formPanel.add(txtApplicantEmail);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("SDT nguoi nop:"));
+        JLabel lblApplicantPhone = new JLabel("SDT nguoi nop:");
+        lblApplicantPhone.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblApplicantPhone);
         txtApplicantPhone = new JTextField();
+        txtApplicantPhone.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtApplicantPhone.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtApplicantPhone.getPreferredSize().height));
         formPanel.add(txtApplicantPhone);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
+
+        // List chọn gửi thông báo cho người nộp đơn (email, SMS, AppPush)
+        JLabel lblApplicantNotify = new JLabel("Thong bao nguoi nop:");
+        lblApplicantNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblApplicantNotify);
+
+        JPanel applicantPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        applicantPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        chkApplicantEmail = new JCheckBox("Email", true);
+        chkApplicantSMS = new JCheckBox("SMS", true);
+        chkApplicantAppPush = new JCheckBox("AppPush", true);
+
+        applicantPanel.add(chkApplicantEmail);
+        applicantPanel.add(chkApplicantSMS);
+        applicantPanel.add(chkApplicantAppPush);
+
+        formPanel.add(applicantPanel);
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
@@ -90,21 +139,38 @@ public class AddDocumentWizardDialog extends JDialog {
 
     private JPanel buildFilePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 8, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(FORM_PADDING, FORM_PADDING, FORM_PADDING, FORM_PADDING));
 
-        formPanel.add(new JLabel("Loai ho so:"));
+        JLabel lblDocumentType = new JLabel("Loai ho so:");
+        lblDocumentType.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblDocumentType);
+
         cbDocumentType = new JComboBox<>(DocumentTypes.values());
+        cbDocumentType.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cbDocumentType.setMaximumSize(new Dimension(Integer.MAX_VALUE, cbDocumentType.getPreferredSize().height));
         formPanel.add(cbDocumentType);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("Chu ky so:"));
+        JLabel lblSignature = new JLabel("Chu ky so:");
+        lblSignature.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblSignature);
+
         txtDigitalSignature = new JTextField();
+        txtDigitalSignature.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtDigitalSignature.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtDigitalSignature.getPreferredSize().height));
         formPanel.add(txtDigitalSignature);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("Tap tin dinh kem:"));
+        JLabel lblAttachment = new JLabel("Tap tin dinh kem:");
+        lblAttachment.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblAttachment);
+
         JButton btnFile = new JButton("Chon...");
         lblFileName = new JLabel("Chua chon");
         JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        filePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         filePanel.add(btnFile);
         filePanel.add(Box.createHorizontalStrut(8));
         filePanel.add(lblFileName);
@@ -124,20 +190,54 @@ public class AddDocumentWizardDialog extends JDialog {
 
     private JPanel buildConfirmPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 8, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(FORM_PADDING, FORM_PADDING, FORM_PADDING, FORM_PADDING));
 
-        formPanel.add(new JLabel("Ten can bo:"));
+        JLabel lblOfficerName = new JLabel("Ten can bo:");
+        lblOfficerName.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblOfficerName);
         txtOfficerName = new JTextField("Can bo truc ban");
+        txtOfficerName.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtOfficerName.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtOfficerName.getPreferredSize().height));
         formPanel.add(txtOfficerName);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("Email can bo:"));
+        JLabel lblOfficerEmail = new JLabel("Email can bo:");
+        lblOfficerEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblOfficerEmail);
         txtOfficerEmail = new JTextField("officer@tdtu.edu.vn");
+        txtOfficerEmail.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtOfficerEmail.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtOfficerEmail.getPreferredSize().height));
         formPanel.add(txtOfficerEmail);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
 
-        formPanel.add(new JLabel("SDT can bo:"));
+        JLabel lblOfficerPhone = new JLabel("SDT can bo:");
+        lblOfficerPhone.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblOfficerPhone);
         txtOfficerPhone = new JTextField("0123456789");
+        txtOfficerPhone.setAlignmentX(Component.LEFT_ALIGNMENT);
+        txtOfficerPhone.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtOfficerPhone.getPreferredSize().height));
         formPanel.add(txtOfficerPhone);
+        formPanel.add(Box.createVerticalStrut(V_GAP));
+
+        // List chọn gửi thông báo cho cán bộ xử lý (email, SMS, AppPush)
+        JLabel lblOfficerNotify = new JLabel("Thong bao can bo:");
+        lblOfficerNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
+        formPanel.add(lblOfficerNotify);
+
+        JPanel officerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        officerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        chkOfficerEmail = new JCheckBox("Email", true);
+        chkOfficerSMS = new JCheckBox("SMS", true);
+        chkOfficerAppPush = new JCheckBox("AppPush", true);
+
+        officerPanel.add(chkOfficerEmail);
+        officerPanel.add(chkOfficerSMS);
+        officerPanel.add(chkOfficerAppPush);
+
+        formPanel.add(officerPanel);
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
