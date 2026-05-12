@@ -1,4 +1,4 @@
-package document.extractor;
+package document.requirement2;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import document.extractor.orc.OrcServiceTextExtractor;
+import document.requirement2.orc.OrcServiceTextExtractor;
 
 import org.junit.jupiter.api.DisplayName;
 

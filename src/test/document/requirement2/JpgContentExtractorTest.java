@@ -1,4 +1,4 @@
-package document.extractor;
+package document.requirement2;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

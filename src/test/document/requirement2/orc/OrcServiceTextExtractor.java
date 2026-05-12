@@ -1,4 +1,4 @@
-package document.extractor.orc;
+package document.requirement2.orc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
