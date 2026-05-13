@@ -11,9 +11,9 @@ public class AppPushNotification implements NotificationObserver {
             return;
         }
         System.out.println(
-                "  [APP PUSH]  -> Người nộp (" + doc.applicantName + "): Hồ sơ chuyển sang trạng thái " + doc.status);
+                "[APP PUSH]  -> Người nộp (" + doc.applicantName + "): Hồ sơ chuyển sang trạng thái " + doc.status);
         System.out.println(
-                "  [APP PUSH]  -> Cán bộ xử lý (" + doc.officerName + "): Hồ sơ chuyển sang trạng thái " + doc.status);
+                "[APP PUSH]  -> Cán bộ xử lý (" + doc.officerName + "): Hồ sơ chuyển sang trạng thái " + doc.status);
     }
 
     private boolean isEnabled(Document doc) {

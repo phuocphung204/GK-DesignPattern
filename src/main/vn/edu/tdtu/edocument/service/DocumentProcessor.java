@@ -147,10 +147,10 @@ public class DocumentProcessor {
         // TODO: sửa lại khi xong yc4, hiện tại chỉ in ra console để mô phỏng như demo
         // ban đầu
         System.out.println(
-                "  [GỬI EMAIL] -> Người nộp (" + doc.applicantEmail + "): Hồ sơ đã được tiếp nhận và đang chờ xử lý.");
+                "[GỬI EMAIL] -> Người nộp (" + doc.applicantEmail + "): Hồ sơ đã được tiếp nhận và đang chờ xử lý.");
         System.out.println(
-                "  [GỬI SMS]   -> Người nộp (" + doc.applicantPhone + "): Hồ sơ đã được tiếp nhận và đang chờ xử lý.");
-        System.out.println("  [GỬI EMAIL] -> Cán bộ xử lý (" + doc.officerEmail + "): Bạn có hồ sơ mới cần xử lý.");
-        System.out.println("  [GỬI SMS]   -> Cán bộ xử lý (" + doc.officerPhone + "): Bạn có hồ sơ mới cần xử lý.");
+                "[GỬI SMS]   -> Người nộp (" + doc.applicantPhone + "): Hồ sơ đã được tiếp nhận và đang chờ xử lý.");
+        System.out.println("[GỬI EMAIL] -> Cán bộ xử lý (" + doc.officerEmail + "): Bạn có hồ sơ mới cần xử lý.");
+        System.out.println("[GỬI SMS]   -> Cán bộ xử lý (" + doc.officerPhone + "): Bạn có hồ sơ mới cần xử lý.");
     }
 }

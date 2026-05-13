@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import vn.edu.tdtu.edocument.model.Document;
 import vn.edu.tdtu.edocument.model.UserPreference;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
@@ -17,9 +18,9 @@ import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 public class BrevoEmailNotification implements NotificationObserver {
     private static final String API_URL = "https://api.brevo.com/v3/smtp/email";
     private static final int TEMPLATE_ID = 1;
-    private static final String ENV_API_KEY = "BREVO_API_KEY";
-    private static final String ENV_SENDER_EMAIL = "BREVO_SENDER_EMAIL";
-    private static final String ENV_SENDER_NAME = "BREVO_SENDER_NAME";
+    private static final String BREVO_API_KEY = "BREVO_API_KEY";
+    private static final String BREVO_SENDER_EMAIL = "BREVO_SENDER_EMAIL";
+    private static final String BREVO_SENDER_NAME = "BREVO_SENDER_NAME";
 
     @Override
     public void update(Document doc) {
@@ -48,14 +49,16 @@ public class BrevoEmailNotification implements NotificationObserver {
                     HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             int status = response.statusCode();
             if (status >= 200 && status < 300) {
-                System.out.println("  [BREVO] Gui email thanh cong. Status=" + status);
+                System.out.println("[BREVO] Gui email thanh cong. Status=" + status);
+                System.out.println(response.body());
             } else {
-                System.out.println("  [BREVO] Gui email that bai. Status=" + status + " Body=" + response.body());
+                System.out.println("[BREVO] Gui email that bai. Status=" + status + " Body=" + response.body());
+                System.out.println(response.body());
             }
         } catch (IOException ex) {
-            System.out.println("  [BREVO] Loi gui email: " + ex.getMessage());
+            System.out.println("[BREVO] Loi gui email: " + ex.getMessage());
         } catch (InterruptedException ex) {
-            System.out.println("  [BREVO] Loi gui email: " + ex.getMessage());
+            System.out.println("[BREVO] Loi gui email: " + ex.getMessage());
             Thread.currentThread().interrupt();
         }
     }
@@ -68,12 +71,12 @@ public class BrevoEmailNotification implements NotificationObserver {
         return preference != null && preference.receiveEmail;
     }
 
-        private static void logFallback(Document doc, String reason) {
-        System.out.println("  [BREVO] Bo qua gui email: " + reason);
-        System.out.println("  [GỬI EMAIL] -> Người nộp (" + safe(doc.applicantEmail)
-            + "): Hồ sơ chuyển sang trạng thái " + safe(doc.status));
-        System.out.println("  [GỬI EMAIL] -> Cán bộ xử lý (" + safe(doc.officerEmail)
-            + "): Hồ sơ chuyển sang trạng thái " + safe(doc.status));
+    private static void logFallback(Document doc, String reason) {
+        System.out.println("[BREVO] Bo qua gui email: " + reason);
+        System.out.println("[GỬI EMAIL] -> Người nộp (" + safe(doc.applicantEmail) + "): Hồ sơ chuyển sang trạng thái "
+                + safe(doc.status));
+        System.out.println("[GỬI EMAIL] -> Cán bộ xử lý (" + safe(doc.officerEmail) + "): Hồ sơ chuyển sang trạng thái "
+                + safe(doc.status));
     }
 
     private static String buildRequestBody(Document doc, BrevoConfig config) {
@@ -85,9 +88,14 @@ public class BrevoEmailNotification implements NotificationObserver {
             return null;
         }
 
+        String content = "Ho so " + safe(doc.id) + " (" + safe(doc.documentType) + ") da chuyen sang trang thai "
+                + safe(doc.status);
+
         JSONObject sender = new JSONObject().put("name", config.senderName).put("email", config.senderEmail);
-        JSONObject body = new JSONObject().put("sender", sender).put("templateId", TEMPLATE_ID).put("messageVersions",
-                messageVersions);
+        JSONObject params = new JSONObject().put("username", safe(doc.applicantName)).put("content", content);
+        JSONObject body = new JSONObject().put("sender", sender).put("templateId", TEMPLATE_ID)
+                .put("messageVersions", messageVersions).put("params", params);
+
         return body.toString();
     }
 
@@ -98,8 +106,8 @@ public class BrevoEmailNotification implements NotificationObserver {
         JSONObject recipient = new JSONObject().put("email", email).put("name", safe(name));
         JSONArray to = new JSONArray().put(recipient);
         JSONObject params = new JSONObject().put("recipientName", safe(name)).put("role", role)
-            .put("documentId", safe(doc.id)).put("documentType", safe(doc.documentType))
-            .put("status", safe(doc.status));
+                .put("documentId", safe(doc.id)).put("documentType", safe(doc.documentType))
+                .put("status", safe(doc.status));
         JSONObject version = new JSONObject().put("to", to).put("params", params);
         versions.put(version);
     }
@@ -124,8 +132,9 @@ public class BrevoEmailNotification implements NotificationObserver {
         }
 
         private static BrevoConfig fromEnv() {
-            return new BrevoConfig(System.getenv(ENV_API_KEY), System.getenv(ENV_SENDER_EMAIL),
-                    System.getenv(ENV_SENDER_NAME));
+            Dotenv dotenv = Dotenv.load();
+            return new BrevoConfig(dotenv.get(BREVO_API_KEY), dotenv.get(BREVO_SENDER_EMAIL),
+                    dotenv.get(BREVO_SENDER_NAME));
         }
 
         private boolean isValid() {
