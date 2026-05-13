@@ -23,26 +23,29 @@ import vn.edu.tdtu.edocument.document.validation.personal_info.steps.BasicInfoVa
 
 public class DocumentProcessor {
     private IRepository _repository;
-    private IDocumentValidationStep _personalInfoValidationChain; // Chuỗi kiểm tra thông tin người dùng, sẽ được khởi
-                                                                  // tạo khi cần thiết
+    private IDocumentValidationStep<PersonalInfoValidationContext> _personalInfoValidationChain; // Chuỗi kiểm tra thông
+                                                                                                 // tin người dùng, sẽ
+                                                                                                 // được khởi tạo khi
+                                                                                                 // cần thiết
     private PersonalInfoValidationContext _personalInfoContext; // Context dùng chung cho cả chuỗi kiểm tra thông tin cá
                                                                 // nhân và tệp đính kèm, sẽ được cập nhật dần theo từng
                                                                 // bước nhập liệu
-    private IDocumentValidationStep _fileValidationChain; // Chuỗi kiểm tra tệp đính kèm, sẽ được khởi tạo khi cần thiết
+    private IDocumentValidationStep<FileValidationContext> _fileValidationChain; // Chuỗi kiểm tra tệp đính kèm, sẽ được
+                                                                                 // khởi tạo khi cần thiết
     private FileValidationContext _fileContext;
 
     public DocumentProcessor(IRepository repository) {
         _repository = repository;
     }
 
-    private IDocumentValidationStep buildPersonalInfoValidationChain() {
+    private IDocumentValidationStep<PersonalInfoValidationContext> buildPersonalInfoValidationChain() {
         // Tạo chuỗi kiểm tra thông tin cá nhân, có thể mở rộng thêm các bước kiểm tra
         // khác nếu cần
         BasicInfoValidationStep head = new BasicInfoValidationStep(_repository);
         return head;
     }
 
-    private IDocumentValidationStep buildFileValidationChain() {
+    private IDocumentValidationStep<FileValidationContext> buildFileValidationChain() {
         // Tạo chuỗi kiểm tra mới cho mỗi lần nhập tệp đính kèm để đảm bảo tính độc lập
         // giữa các hồ sơ
         // Lưu ý: setNext(...) hiện trả về "next" (để fluent build), nên phải giữ
