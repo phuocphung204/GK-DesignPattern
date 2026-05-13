@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
+package vn.edu.tdtu.edocument.repository.database.MongoDB;
 
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
@@ -14,18 +14,12 @@ public class MongoDBDocumentMapping {
             return null;
         }
 
-        return new org.bson.Document()
-            .append("_id", document.id == null ? null : document.id)
-                .append("applicantName", document.applicantName)
-                .append("applicantEmail", document.applicantEmail)
-                .append("applicantPhone", document.applicantPhone)
-                .append("officerName", document.officerName)
-                .append("officerEmail", document.officerEmail)
-                .append("officerPhone", document.officerPhone)
-                .append("documentType", enumToString(document.documentType))
-                .append("filePath", document.filePath)
-                .append("fileExtension", document.fileExtension)
-                .append("fileSizeKB", document.fileSizeKB)
+        return new org.bson.Document().append("_id", document.id == null ? null : document.id)
+                .append("applicantName", document.applicantName).append("applicantEmail", document.applicantEmail)
+                .append("applicantPhone", document.applicantPhone).append("officerName", document.officerName)
+                .append("officerEmail", document.officerEmail).append("officerPhone", document.officerPhone)
+                .append("documentType", enumToString(document.documentType)).append("filePath", document.filePath)
+                .append("fileExtension", document.fileExtension).append("fileSizeKB", document.fileSizeKB)
                 .append("digitalSignature", document.digitalSignature)
                 .append("extractedContent", document.extractedContent)
                 .append("extractedContentHash", document.extractedContentHash)
@@ -69,7 +63,8 @@ public class MongoDBDocumentMapping {
     }
 
     private static UUID readUuidId(org.bson.Document bsonDoc) {
-        // Prefer explicit "id" field if present (some legacy docs may have both "_id" and "id").
+        // Prefer explicit "id" field if present (some legacy docs may have both "_id"
+        // and "id").
         UUID fromIdField = parseUuidOrNull(bsonDoc.getString("id"));
         if (fromIdField != null) {
             return fromIdField;

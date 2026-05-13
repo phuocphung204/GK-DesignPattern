@@ -1,14 +1,15 @@
 package vn.edu.tdtu.edocument.document.validation.file;
 
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.validation.IDocumentValidationStep;
+import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
 
 public abstract class FileValidationStepBase implements IDocumentValidationStep<FileValidationContext> {
 
     protected IDocumentValidationStep<FileValidationContext> nextStep;
     protected IRepository _repository;
+
     protected FileValidationStepBase(IRepository repository) {
         this._repository = repository;
     }
@@ -32,5 +33,5 @@ public abstract class FileValidationStepBase implements IDocumentValidationStep<
     }
 
     protected abstract ValidationResult performValidation(FileValidationContext request);
-    
+
 }

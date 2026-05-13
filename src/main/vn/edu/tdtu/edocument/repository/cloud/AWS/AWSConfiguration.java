@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository.cloud.AWS;
+package vn.edu.tdtu.edocument.repository.cloud.AWS;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -35,15 +35,13 @@ public class AWSConfiguration {
     }
 
     /**
-     * Creates a configuration from env vars / system props / .env with safe defaults.
+     * Creates a configuration from env vars / system props / .env with safe
+     * defaults.
      */
     private AWSConfiguration() {
-        this(
-                resolve("AWS_ACCESS_KEY", "ACCESS_KEY", "AWS_ACCESS_KEY_ID"),
-                resolve("AWS_SECRET_KEY", "SECRET_KEY", "AWS_SECRET_ACCESS_KEY"),
-                resolve("AWS_REGION", "REGION"),
-                resolve("AWS_BUCKET", "BUCKET", "AWS_BUCKET_NAME")
-        );
+        this(resolve("AWS_ACCESS_KEY", "ACCESS_KEY", "AWS_ACCESS_KEY_ID"),
+                resolve("AWS_SECRET_KEY", "SECRET_KEY", "AWS_SECRET_ACCESS_KEY"), resolve("AWS_REGION", "REGION"),
+                resolve("AWS_BUCKET", "BUCKET", "AWS_BUCKET_NAME"));
     }
 
     public static AWSConfiguration getInstance() {

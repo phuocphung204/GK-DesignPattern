@@ -1,7 +1,7 @@
 package vn.edu.tdtu.edocument.document.validation.personal_info;
 
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.validation.PersonalInfoValidationContext;
+import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.validation.IDocumentValidationStep;
 
@@ -9,12 +9,14 @@ public abstract class PersonalInfoValidationStepBase implements IDocumentValidat
 
     protected IDocumentValidationStep<PersonalInfoValidationContext> nextStep;
     protected IRepository _repository;
+
     protected PersonalInfoValidationStepBase(IRepository repository) {
         this._repository = repository;
     }
 
     @Override
-    public IDocumentValidationStep<PersonalInfoValidationContext> setNext(IDocumentValidationStep<PersonalInfoValidationContext> next) {
+    public IDocumentValidationStep<PersonalInfoValidationContext> setNext(
+            IDocumentValidationStep<PersonalInfoValidationContext> next) {
         this.nextStep = next;
         return next;
     }
@@ -32,5 +34,5 @@ public abstract class PersonalInfoValidationStepBase implements IDocumentValidat
     }
 
     protected abstract ValidationResult performValidation(PersonalInfoValidationContext request);
-    
+
 }

@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository;
+package vn.edu.tdtu.edocument.repository;
 
 import java.io.File;
 import java.io.IOException;

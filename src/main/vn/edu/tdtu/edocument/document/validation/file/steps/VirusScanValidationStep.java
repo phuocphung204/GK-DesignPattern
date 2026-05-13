@@ -4,9 +4,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
 import vn.edu.tdtu.edocument.document.validation.file.FileValidationStepBase;
+import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.result.Errors;
 

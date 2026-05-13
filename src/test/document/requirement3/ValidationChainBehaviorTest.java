@@ -4,10 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
 import vn.edu.tdtu.edocument.document.validation.file.FileValidationStepBase;
+import vn.edu.tdtu.edocument.repository.IRepository;
 
 import java.util.ArrayList;
 import java.util.List;

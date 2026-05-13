@@ -1,11 +1,11 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.document.repository.*;
-import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBDocumentRepository;
-import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBConfiguration;
-import vn.edu.tdtu.edocument.document.repository.local_storage.LocalJsonRepository;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
+import vn.edu.tdtu.edocument.repository.*;
+import vn.edu.tdtu.edocument.repository.database.MongoDB.MongoDBConfiguration;
+import vn.edu.tdtu.edocument.repository.database.MongoDB.MongoDBDocumentRepository;
+import vn.edu.tdtu.edocument.repository.local_storage.LocalJsonRepository;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
@@ -26,11 +26,12 @@ public class MainSwingUI extends JFrame {
     private JTextArea consoleArea;
     private JTable documentTable;
     private DefaultTableModel tableModel;
-    // Configuration and repository setup can be done here or via a factory method. For simplicity, we'll do it directly.
+    // Configuration and repository setup can be done here or via a factory method.
+    // For simplicity, we'll do it directly.
     private IRepository _repository = RepositoryFactory.createRepository(RepositoryType.MONGODB);
     private DocumentProcessor processor = new DocumentProcessor(_repository);
     private List<Document> documentList;
-    
+
     public MainSwingUI() {
         System.err.println("[UI] Entering MainSwingUI constructor.");
 
@@ -124,10 +125,10 @@ public class MainSwingUI extends JFrame {
         }
 
         System.out.println("\n--- CHI TIẾT HỒ SƠ: " + matched.id + " ---");
-        System.out.println("Người nộp: " + matched.applicantName + " | Email: " + matched.applicantEmail
-                + " | SĐT: " + matched.applicantPhone);
-        System.out.println("Cán bộ tiếp nhận: " + matched.officerName + " | Email: " + matched.officerEmail
-                + " | SĐT: " + matched.officerPhone);
+        System.out.println("Người nộp: " + matched.applicantName + " | Email: " + matched.applicantEmail + " | SĐT: "
+                + matched.applicantPhone);
+        System.out.println("Cán bộ tiếp nhận: " + matched.officerName + " | Email: " + matched.officerEmail + " | SĐT: "
+                + matched.officerPhone);
         System.out.println("Loại hồ sơ: " + matched.documentType);
         System.out.println("Đường dẫn tệp: " + matched.filePath + " (" + matched.fileSizeKB + " KB)");
         System.out.println("Chữ ký số: " + matched.digitalSignature);
@@ -141,7 +142,8 @@ public class MainSwingUI extends JFrame {
             @Override
             protected List<Document> doInBackground() {
                 try {
-                    /// đổi lại _repository khác nếu muốn load từ một nguồn khác (ví dụ: database, API, v.v.)
+                    /// đổi lại _repository khác nếu muốn load từ một nguồn khác (ví dụ: database,
+                    /// API, v.v.)
                     return _repository.GetAllDocuments();
                 } catch (Exception e) {
                     ORIGINAL_ERR.println("[UI] Failed to load existing documents: " + e.getMessage());

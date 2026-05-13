@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
+package vn.edu.tdtu.edocument.repository.database.MongoDB;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -30,11 +30,9 @@ public class MongoDBConfiguration {
         }
 
         ConnectionString cs = new ConnectionString(connectionString);
-        MongoClientSettings settings = MongoClientSettings.builder()
-            .applyConnectionString(cs)
-            // Ensure java.util.UUID is encoded/decoded as BSON UUID (Binary subtype 4).
-            .uuidRepresentation(UuidRepresentation.STANDARD)
-            .build();
+        MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(cs)
+                // Ensure java.util.UUID is encoded/decoded as BSON UUID (Binary subtype 4).
+                .uuidRepresentation(UuidRepresentation.STANDARD).build();
 
         mongoClient = MongoClients.create(settings);
         database = mongoClient.getDatabase(databaseName);

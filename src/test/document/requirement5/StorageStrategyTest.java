@@ -10,8 +10,8 @@ import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
-import vn.edu.tdtu.edocument.document.repository.RepositoryFactory;
+import vn.edu.tdtu.edocument.repository.IRepository;
+import vn.edu.tdtu.edocument.repository.RepositoryFactory;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import java.util.List;

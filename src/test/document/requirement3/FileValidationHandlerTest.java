@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
-import vn.edu.tdtu.edocument.document.repository.IRepository;
-import vn.edu.tdtu.edocument.document.repository.RepositoryFactory;
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
+import vn.edu.tdtu.edocument.repository.IRepository;
+import vn.edu.tdtu.edocument.repository.RepositoryFactory;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;

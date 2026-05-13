@@ -1,8 +1,8 @@
 package vn.edu.tdtu.edocument.document.validation.file.steps;
 
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
 import vn.edu.tdtu.edocument.document.validation.file.FileValidationStepBase;
+import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.result.Errors;
 import vn.edu.tdtu.edocument.service.Hash;

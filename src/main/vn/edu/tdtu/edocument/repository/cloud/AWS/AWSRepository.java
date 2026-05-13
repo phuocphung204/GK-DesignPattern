@@ -1,10 +1,10 @@
-package vn.edu.tdtu.edocument.document.repository.cloud.AWS;
+package vn.edu.tdtu.edocument.repository.cloud.AWS;
 
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
-import vn.edu.tdtu.edocument.document.repository.FileStorageHelper;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
-import vn.edu.tdtu.edocument.document.repository.RepositoryException;
+import vn.edu.tdtu.edocument.repository.FileStorageHelper;
+import vn.edu.tdtu.edocument.repository.IRepository;
+import vn.edu.tdtu.edocument.repository.RepositoryException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,8 +17,8 @@ import java.util.UUID;
 /**
  * Fake AWS repository.
  *
- * This class simulates persisting documents to AWS (e.g., S3/DynamoDB) by writing
- * JSON metadata to a dedicated folder under server_storage.
+ * This class simulates persisting documents to AWS (e.g., S3/DynamoDB) by
+ * writing JSON metadata to a dedicated folder under server_storage.
  */
 public class AWSRepository implements IRepository {
     private static final AWSRepository INSTANCE = new AWSRepository(AWSConfiguration.getInstance());
@@ -48,7 +48,8 @@ public class AWSRepository implements IRepository {
         if (segment == null) {
             return null;
         }
-        // Prevent accidental path traversal; keep it simple for the fake implementation.
+        // Prevent accidental path traversal; keep it simple for the fake
+        // implementation.
         return segment.replace("/", "_").replace("\\\\", "_").trim();
     }
 
@@ -65,9 +66,8 @@ public class AWSRepository implements IRepository {
             return false;
         }
         List<Document> allDocs = GetAllDocuments();
-        return allDocs.stream().anyMatch(doc -> doc != null
-                && doc.extractedContentHash != null
-                && hash.equals(doc.extractedContentHash));
+        return allDocs.stream().anyMatch(
+                doc -> doc != null && doc.extractedContentHash != null && hash.equals(doc.extractedContentHash));
     }
 
     @Override

@@ -10,8 +10,6 @@ import vn.edu.tdtu.edocument.document.extractor.core.FileExtractorStrategy;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
-import vn.edu.tdtu.edocument.document.repository.FileStorageHelper;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
 import vn.edu.tdtu.edocument.document.validation.FileValidationContext;
 import vn.edu.tdtu.edocument.document.validation.IDocumentValidationStep;
@@ -20,6 +18,8 @@ import vn.edu.tdtu.edocument.document.validation.file.steps.BasicFileValidationS
 import vn.edu.tdtu.edocument.document.validation.file.steps.DuplicateContentValidationStep;
 import vn.edu.tdtu.edocument.document.validation.file.steps.VirusScanValidationStep;
 import vn.edu.tdtu.edocument.document.validation.personal_info.steps.BasicInfoValidationStep;
+import vn.edu.tdtu.edocument.repository.FileStorageHelper;
+import vn.edu.tdtu.edocument.repository.IRepository;
 
 public class DocumentProcessor {
     private IRepository _repository;

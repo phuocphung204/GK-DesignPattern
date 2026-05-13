@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository.local_storage;
+package vn.edu.tdtu.edocument.repository.local_storage;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
-import vn.edu.tdtu.edocument.document.repository.RepositoryException;
+import vn.edu.tdtu.edocument.repository.IRepository;
+import vn.edu.tdtu.edocument.repository.RepositoryException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,8 @@ import java.util.UUID;
 
 public class LocalJsonRepository implements IRepository {
     private static final String STORAGE_DIR = "server_storage";
-    private static final LocalJsonRepository _instance = new LocalJsonRepository(); // Singleton instance EAGER initialization
+    private static final LocalJsonRepository _instance = new LocalJsonRepository(); // Singleton instance EAGER
+                                                                                    // initialization
 
     private static String storageKey(UUID id) {
         if (id == null) {
@@ -30,7 +31,7 @@ public class LocalJsonRepository implements IRepository {
     private LocalJsonRepository() {
         // Private constructor to prevent instantiation
     }
-    
+
     public static LocalJsonRepository getInstance() {
         return _instance;
     }
@@ -41,10 +42,10 @@ public class LocalJsonRepository implements IRepository {
             return false;
         }
         List<Document> allDocs = GetAllDocuments();
-        return allDocs.stream().anyMatch(doc -> doc != null
-                && doc.extractedContentHash != null
-                && hash.equals(doc.extractedContentHash));
+        return allDocs.stream().anyMatch(
+                doc -> doc != null && doc.extractedContentHash != null && hash.equals(doc.extractedContentHash));
     }
+
     @Override
     public Document GetDocumentById(UUID id) {
         // Implementation to read JSON file and return Document object by ID
@@ -62,9 +63,11 @@ public class LocalJsonRepository implements IRepository {
         }
         return null; // Placeholder
     }
+
     @Override
     public List<Document> GetAllDocuments() {
-        // Implementation to read all JSON files in the storage directory and return a list of Document objects
+        // Implementation to read all JSON files in the storage directory and return a
+        // list of Document objects
         String storageDirPath = STORAGE_DIR;
         File storageDir = new File(storageDirPath);
         List<Document> documents = new ArrayList<>();
@@ -75,7 +78,8 @@ public class LocalJsonRepository implements IRepository {
                 for (File dataFile : files) {
                     try {
                         String json = new String(Files.readAllBytes(dataFile.toPath()));
-                        Document doc = LocalJsonDocumentMapping.mapJsonToDocument(json); // Convert JSON string back to Document object
+                        Document doc = LocalJsonDocumentMapping.mapJsonToDocument(json); // Convert JSON string back to
+                                                                                         // Document object
                         if (doc != null) {
                             documents.add(doc);
                         }
@@ -89,6 +93,7 @@ public class LocalJsonRepository implements IRepository {
         }
         return documents;
     }
+
     @Override
     public Document GetLatestDraft() {
         String storageDirPath = STORAGE_DIR;

@@ -1,10 +1,11 @@
-package vn.edu.tdtu.edocument.document.repository.database.MongoDB;
+package vn.edu.tdtu.edocument.repository.database.MongoDB;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
+
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.repository.RepositoryException;
+import vn.edu.tdtu.edocument.repository.IRepository;
+import vn.edu.tdtu.edocument.repository.RepositoryException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +42,10 @@ public class MongoDBDocumentRepository implements IRepository {
 
     @Override
     public Document GetLatestDraft() {
-        // No explicit timestamp fields in the model; use MongoDB natural order as a best-effort "latest".
-        var filter = new org.bson.Document("status",
-            new org.bson.Document("$in", List.of("BAN_NHAP", "DA_TAI_FILE")));
-        var doc = collection.find(filter)
-            .sort(new org.bson.Document("$natural", -1))
-            .first();
+        // No explicit timestamp fields in the model; use MongoDB natural order as a
+        // best-effort "latest".
+        var filter = new org.bson.Document("status", new org.bson.Document("$in", List.of("BAN_NHAP", "DA_TAI_FILE")));
+        var doc = collection.find(filter).sort(new org.bson.Document("$natural", -1)).first();
         if (doc == null) {
             return null;
         }

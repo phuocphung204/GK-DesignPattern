@@ -1,4 +1,4 @@
-package vn.edu.tdtu.edocument.document.repository.local_storage;
+package vn.edu.tdtu.edocument.repository.cloud.AWS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,9 +11,9 @@ import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import java.util.Locale;
 import java.util.UUID;
 
-public class LocalJsonDocumentMapping {
+public class AWSDocumentMapping {
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    
+
     public static String mapDocumentToJson(Document document) {
         if (document == null) {
             return null;
@@ -39,7 +39,6 @@ public class LocalJsonDocumentMapping {
         try {
             return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root);
         } catch (JsonProcessingException e) {
-            // Keep existing behavior of returning a best-effort String (callers already handle null/empty).
             return null;
         }
     }
@@ -62,6 +61,7 @@ public class LocalJsonDocumentMapping {
 
             doc.documentType = parseEnum(DocumentTypes.class, textOrNull(root.get("documentType")));
             doc.filePath = nullIfLiteralNull(textOrNull(root.get("filePath")));
+
             String fileExtension = nullIfLiteralNull(textOrNull(root.get("fileExtension")));
             doc.fileExtension = fileExtension == null ? null : fileExtension.trim().toUpperCase(Locale.ROOT);
 
@@ -88,7 +88,6 @@ public class LocalJsonDocumentMapping {
 
             return doc;
         } catch (Exception e) {
-            // Invalid JSON or unexpected values -> return null to keep callers safe.
             return null;
         }
     }
@@ -105,10 +104,6 @@ public class LocalJsonDocumentMapping {
         if (node == null || node.isNull() || node.isMissingNode()) {
             return null;
         }
-        if (node.isTextual()) {
-            return node.asText();
-        }
-        // For non-strings (numbers/booleans), keep a string representation (for legacy fields).
         return node.asText();
     }
 

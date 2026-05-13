@@ -1,9 +1,9 @@
 package vn.edu.tdtu.edocument.ui;
 
 import vn.edu.tdtu.edocument.document.builder.*;
-import vn.edu.tdtu.edocument.document.repository.IRepository;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.*;
+import vn.edu.tdtu.edocument.repository.IRepository;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
@@ -32,8 +32,8 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtApplicantEmail;
     private JTextField txtApplicantPhone;
 
-        private final EnumMap<NotificationChannelType, JCheckBox> applicantNotificationChannels =
-            new EnumMap<>(NotificationChannelType.class);
+    private final EnumMap<NotificationChannelType, JCheckBox> applicantNotificationChannels = new EnumMap<>(
+            NotificationChannelType.class);
 
     private JComboBox<DocumentTypes> cbDocumentType;
     private JTextField txtDigitalSignature;
@@ -44,8 +44,8 @@ public class AddDocumentWizardDialog extends JDialog {
     private JTextField txtOfficerEmail;
     private JTextField txtOfficerPhone;
 
-        private final EnumMap<NotificationChannelType, JCheckBox> officerNotificationChannels =
-            new EnumMap<>(NotificationChannelType.class);
+    private final EnumMap<NotificationChannelType, JCheckBox> officerNotificationChannels = new EnumMap<>(
+            NotificationChannelType.class);
 
     private JButton btnBack;
     private JButton btnNext;
@@ -147,7 +147,8 @@ public class AddDocumentWizardDialog extends JDialog {
 
         txtDigitalSignature = new JTextField();
         txtDigitalSignature.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtDigitalSignature.setMaximumSize(new Dimension(Integer.MAX_VALUE, txtDigitalSignature.getPreferredSize().height));
+        txtDigitalSignature
+                .setMaximumSize(new Dimension(Integer.MAX_VALUE, txtDigitalSignature.getPreferredSize().height));
         formPanel.add(txtDigitalSignature);
         formPanel.add(Box.createVerticalStrut(V_GAP));
 
