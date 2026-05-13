@@ -146,8 +146,8 @@ public class StorageStrategyTest {
 		try {
 			// Same business API (DocumentProcessor) but different storage strategies
 			// (IRepository).
-			boolean localOk = localProcessor.proccessInsertPersonalInfo(localDoc);
-			boolean awsOk = awsProcessor.proccessInsertPersonalInfo(awsDoc);
+			boolean localOk = localProcessor.processInsertPersonalInfo(localDoc);
+			boolean awsOk = awsProcessor.processInsertPersonalInfo(awsDoc);
 
 			assertTrue(localOk);
 			assertTrue(awsOk);
@@ -203,7 +203,7 @@ public class StorageStrategyTest {
 		DocumentProcessor processor = new DocumentProcessor(failingRepo);
 		Document doc = buildSampleDocument("fail-" + UUID.randomUUID());
 
-		assertThrows(IllegalStateException.class, () -> processor.proccessInsertPersonalInfo(doc));
+		assertThrows(IllegalStateException.class, () -> processor.processInsertPersonalInfo(doc));
 	}
 
 	@Test

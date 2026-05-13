@@ -12,9 +12,8 @@ import org.json.JSONObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
-import java.util.List;
+import vn.edu.tdtu.edocument.notification.core.UserProfile;
 
 public class BrevoEmailNotification implements NotificationObserver {
     private static final String API_URL = "https://api.brevo.com/v3/smtp/email";
@@ -24,17 +23,20 @@ public class BrevoEmailNotification implements NotificationObserver {
     private static final String BREVO_SENDER_NAME = "BREVO_SENDER_NAME";
 
     @Override
-    public void update(Document doc) {
-        if (!isEnabled(doc)) {
+    public void update(UserProfile userProfile, Document doc) {
+
+        if (userProfile == null || !userProfile.isValidProfile()) {
+            logFallback(doc, "Thông tin người nhận không hợp lệ.");
             return;
         }
+
         BrevoConfig config = BrevoConfig.fromEnv();
         if (!config.isValid()) {
             logFallback(doc, "Thiếu cấu hình BREVO_API_KEY/BREVO_SENDER_EMAIL/BREVO_SENDER_NAME.");
             return;
         }
 
-        String requestBody = buildRequestBody(doc, config);
+        String requestBody = buildRequestBody(userProfile, doc, config);
         if (requestBody == null) {
             logFallback(doc, "Không có email người nhận hợp lệ.");
             return;
@@ -64,14 +66,6 @@ public class BrevoEmailNotification implements NotificationObserver {
         }
     }
 
-    private boolean isEnabled(Document doc) {
-        if (doc == null) {
-            return false;
-        }
-        return contains(doc.applicantPreference, NotificationChannelType.EMAIL)
-                || contains(doc.officerPreference, NotificationChannelType.EMAIL);
-    }
-
     private static void logFallback(Document doc, String reason) {
         System.out.println("[BREVO] Bo qua gui email: " + reason);
         System.out.println("[GỬI EMAIL] -> Người nộp (" + safe(doc.applicantEmail) + "): Hồ sơ chuyển sang trạng thái "
@@ -80,48 +74,39 @@ public class BrevoEmailNotification implements NotificationObserver {
                 + safe(doc.status));
     }
 
-    private static String buildRequestBody(Document doc, BrevoConfig config) {
+    private static String buildRequestBody(UserProfile userProfile, Document doc, BrevoConfig config) {
         JSONArray messageVersions = new JSONArray();
-        appendVersion(messageVersions, doc, "Nguoi nop", doc.applicantName, doc.applicantEmail,
-            contains(doc.applicantPreference, NotificationChannelType.EMAIL));
-        appendVersion(messageVersions, doc, "Can bo xu ly", doc.officerName, doc.officerEmail,
-            contains(doc.officerPreference, NotificationChannelType.EMAIL));
+        appendVersion(messageVersions, doc, userProfile.getRole(), userProfile.getName(), userProfile.getEmail());
 
         if (messageVersions.isEmpty()) {
             return null;
         }
 
-        String content = "Ho so " + safe(doc.id) + " (" + safe(doc.documentType) + ") da chuyen sang trang thai "
+        String content = "Hồ sơ " + safe(doc.id) + " (" + safe(doc.documentType) + ") đã chuyển sang trạng thái "
                 + safe(doc.status);
 
         JSONObject sender = new JSONObject().put("name", config.senderName).put("email", config.senderEmail);
-        JSONObject params = new JSONObject().put("username", safe(doc.applicantName)).put("content", content);
+        JSONObject params = new JSONObject().put("username", "ạn").put("content", content);
         JSONObject body = new JSONObject().put("sender", sender).put("templateId", TEMPLATE_ID)
                 .put("messageVersions", messageVersions).put("params", params);
 
         return body.toString();
     }
 
-    private static void appendVersion(JSONArray versions, Document doc, String role, String name, String email,
-            boolean enabled) {
-        if (!enabled || isBlank(email)) {
+    private static void appendVersion(JSONArray versions, Document doc, String role, String name, String email) {
+        if (isBlank(email)) {
             return;
         }
         JSONObject recipient = new JSONObject().put("email", email).put("name", safe(name));
         JSONArray to = new JSONArray().put(recipient);
-        JSONObject params = new JSONObject().put("recipientName", safe(name)).put("role", role)
-                .put("documentId", safe(doc.id)).put("documentType", safe(doc.documentType))
-                .put("status", safe(doc.status));
-        JSONObject version = new JSONObject().put("to", to).put("params", params);
+
+        JSONObject version = new JSONObject().put("to", to);
+
         versions.put(version);
     }
 
     private static boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
-    }
-
-    private static boolean contains(List<NotificationChannelType> preferences, NotificationChannelType type) {
-        return preferences != null && type != null && preferences.contains(type);
     }
 
     private static String safe(Object value) {
@@ -141,7 +126,8 @@ public class BrevoEmailNotification implements NotificationObserver {
 
         private static BrevoConfig fromEnv() {
             Dotenv dotenv = Dotenv.load();
-            return new BrevoConfig(dotenv.get(BREVO_API_KEY), dotenv.get(BREVO_SENDER_EMAIL),
+            return new BrevoConfig(dotenv.get(BREVO_API_KEY),
+                    dotenv.get(BREVO_SENDER_EMAIL),
                     dotenv.get(BREVO_SENDER_NAME));
         }
 

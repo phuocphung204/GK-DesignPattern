@@ -18,6 +18,7 @@ import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
+import vn.edu.tdtu.edocument.notification.core.UserProfile;
 import vn.edu.tdtu.edocument.notification.impl.BrevoEmailNotification;
 
 public class EmailNotificationsTest {
@@ -46,7 +47,12 @@ public class EmailNotificationsTest {
                 List.of(NotificationChannelType.EMAIL),
                 List.of());
 
-        String output = captureOutput(() -> new BrevoEmailNotification().update(doc));
+        UserProfile userProfile = new UserProfile(doc.applicantName,
+                doc.applicantEmail,
+                doc.applicantPhone,
+                "Người nộp");
+
+        String output = captureOutput(() -> new BrevoEmailNotification().update(userProfile, doc));
         logger.info("Captured output: " + output);
         assertTrue(output.contains("[BREVO] Gui email thanh cong."));
     }
@@ -59,7 +65,12 @@ public class EmailNotificationsTest {
         doc.applicantPreference = List.of();
         doc.officerPreference = List.of();
 
-        String output = captureOutput(() -> new BrevoEmailNotification().update(doc));
+        UserProfile userProfile = new UserProfile(doc.applicantName,
+                doc.applicantEmail,
+                doc.applicantPhone,
+                "Người nộp");
+
+        String output = captureOutput(() -> new BrevoEmailNotification().update(userProfile, doc));
 
         assertTrue(output.isEmpty());
     }

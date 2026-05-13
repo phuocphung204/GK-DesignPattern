@@ -37,14 +37,15 @@ public class AntivirusHandlerTest {
         // Arrange: Tạo một tài liệu mẫu với thông tin cá nhân hợp lệ nhưng tệp đính kèm
         // chứa virus
         documentBuilder = new DocumentBuilder();
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone,
+                NotificationChannelType.defaultPreference());
         Document draft1 = documentBuilder.Build();
-        boolean result1 = _processor.proccessInsertPersonalInfo(draft1);
+        boolean result1 = _processor.processInsertPersonalInfo(draft1);
 
         // Step 2: Nhập tệp đính kèm chứa virus
         documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
         Document draft2 = documentBuilder.Build();
-        boolean result2 = _processor.proccessInsertDocumentFile(draft2);
+        boolean result2 = _processor.processInsertDocumentFile(draft2);
 
         // Assert: Bước kiểm tra tệp đính kèm phải trả về false và pipeline sẽ dừng lại,
         // không thực hiện bước tiếp theo

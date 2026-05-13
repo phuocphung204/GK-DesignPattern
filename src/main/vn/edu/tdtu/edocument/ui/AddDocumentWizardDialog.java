@@ -231,7 +231,8 @@ public class AddDocumentWizardDialog extends JDialog {
         channelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         for (NotificationChannelType type : NotificationChannelType.values()) {
-            JCheckBox checkBox = new JCheckBox(type.getDisplayName(), NotificationChannelType.defaultPreference().contains(type));
+            JCheckBox checkBox = new JCheckBox(type.getDisplayName(),
+                    NotificationChannelType.defaultPreference().contains(type));
             target.put(type, checkBox);
             channelPanel.add(checkBox);
         }
@@ -354,7 +355,7 @@ public class AddDocumentWizardDialog extends JDialog {
             docBuilder.SetPersonalInfo(name, email, phone, applicantPreference);
             // Kiểm tra thông tin cá nhân đã nhập, nếu thiếu sẽ không cho phép qua bước tiếp
             // theo
-            boolean isValid = processor.proccessInsertPersonalInfo(docBuilder.Build());
+            boolean isValid = processor.processInsertPersonalInfo(docBuilder.Build());
 
             if (!isValid) {
                 JOptionPane.showMessageDialog(this, "Vui long nhap day du thong tin nguoi nop.", "Loi",
@@ -386,7 +387,7 @@ public class AddDocumentWizardDialog extends JDialog {
                     extension, sizeKb, txtDigitalSignature.getText().trim());
             // Kiểm tra thông tin file đã nhập, nếu thiếu hoặc không hợp lệ sẽ không cho
             // phép qua bước tiếp theo
-            boolean isValid = processor.proccessInsertDocumentFile(docBuilder.Build());
+            boolean isValid = processor.processInsertDocumentFile(docBuilder.Build());
             if (!isValid) {
                 JOptionPane.showMessageDialog(this, "File tai lieu khong hop le. Vui long kiem tra log.", "Loi",
                         JOptionPane.ERROR_MESSAGE);
@@ -402,14 +403,14 @@ public class AddDocumentWizardDialog extends JDialog {
         String officerEmail = txtOfficerEmail.getText().trim();
         String officerPhone = txtOfficerPhone.getText().trim();
         List<NotificationChannelType> officerPreference = officerNotificationChannels.entrySet().stream()
-            .filter(e -> e.getValue().isSelected()).map(e -> e.getKey()).toList();
+                .filter(e -> e.getValue().isSelected()).map(e -> e.getKey()).toList();
         // Tạo builder hoàn chỉnh với tất cả thông tin đã nhập, bao gồm cả thông tin cán
         // bộ xử lý
         docBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, officerPreference);
         Document doc = docBuilder.Build();
         // Xử lý thông tin nộp hồ sơ, nếu có lỗi sẽ không hoàn thành wizard và sẽ hiển
         // thị lỗi
-        boolean isValid = processor.proccessInsertSubmissionInfo(doc);
+        boolean isValid = processor.processInsertSubmissionInfo(doc);
         if (!isValid) {
             JOptionPane.showMessageDialog(this, "Thong tin can bo xu ly khong hop le. Vui long kiem tra log.", "Loi",
                     JOptionPane.ERROR_MESSAGE);

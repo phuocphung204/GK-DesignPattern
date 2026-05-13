@@ -37,19 +37,21 @@ public class ValidationPipelineTest {
         // Arrange: Tạo một tài liệu mẫu với thông tin đầy đủ và hợp lệ
         documentBuilder = new DocumentBuilder();
         // Step 1: Nhập thông tin cá nhân, sau đó thực hiện kiểm tra thông tin cá nhân
-        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone, NotificationChannelType.defaultPreference());
+        documentBuilder.SetPersonalInfo(applicantName, applicantEmail, applicantPhone,
+                NotificationChannelType.defaultPreference());
         Document draft1 = documentBuilder.Build();
-        boolean result1 = _processor.proccessInsertPersonalInfo(draft1);
+        boolean result1 = _processor.processInsertPersonalInfo(draft1);
 
         // Step 2: Nhập tệp đính kèm và thực hiện chuỗi kiểm tra tệp đính kèm
         documentBuilder.SetFileInfo(documentType, filePath, fileExtension, fileSizeKB, digitalSignature);
         Document draft2 = documentBuilder.Build();
-        boolean result2 = _processor.proccessInsertDocumentFile(draft2);
+        boolean result2 = _processor.processInsertDocumentFile(draft2);
 
         // Step 3: Nhập thông tin người tiếp nhận và thực hiện kiểm tra
-        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone, NotificationChannelType.defaultPreference());
+        documentBuilder.SetSubmissionInfo(officerName, officerEmail, officerPhone,
+                NotificationChannelType.defaultPreference());
         Document draft3 = documentBuilder.Build();
-        boolean result3 = _processor.proccessInsertSubmissionInfo(draft3);
+        boolean result3 = _processor.processInsertSubmissionInfo(draft3);
 
         // Assert: Tất cả các bước kiểm tra đều phải trả về true
         assertTrue(result1, "Kiểm tra thông tin cá nhân phải thành công");

@@ -4,7 +4,7 @@
     {
       "label": "Run Swing UI",
       "type": "shell",
-      "command": "java -cp \"./bin/classes;lib/*\" vn.edu.tdtu.edocument.ui.MainSwingUI",
+      "command": "java -jar target/gk-designpattern-1.0.0-SNAPSHOT.jar",
       "group": "none",
       "problemMatcher": []
     }
