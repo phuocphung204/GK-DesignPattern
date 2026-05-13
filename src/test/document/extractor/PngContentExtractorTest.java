@@ -17,6 +17,18 @@ import java.io.File;
 class PngContentExtractorTest {
     private static final Logger logger = LoggerFactory.getLogger(PngContentExtractorTest.class);
 
+    private static boolean isLiveOcrEnabled() {
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        String enabled = dotenv.get("RUN_LIVE_OCR_TESTS");
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getProperty("run.live.ocr.tests");
+        }
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getenv("RUN_LIVE_OCR_TESTS");
+        }
+        return "true".equalsIgnoreCase(enabled);
+    }
+
     private static boolean hasGeminiKey() {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String key = dotenv.get("GEMINI_MODEL_KEY");
@@ -32,9 +44,12 @@ class PngContentExtractorTest {
     @Test
     @DisplayName("Kiểm tra trích xuất văn bản từ PNG đơn giản")
     void extractTextFromSimplePng() {
-        Assumptions.assumeTrue(hasGeminiKey(), "Skipping OCR test: missing GEMINI_MODEL_KEY or -Dgemini.model.key");
+        Assumptions.assumeTrue(
+            isLiveOcrEnabled() && hasGeminiKey(),
+            "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
+        );
         PngContentExtractor extractor = new PngContentExtractor(ExtractorFactory.ocrService);
-        File png = new File("server_storage/anh-chua-van-ban.png"); // chuẩn bị sample
+        File png = new File("support_test/anh-chua-van-ban.png"); // chuẩn bị sample
         assertTrue(png.exists(), "tệp PNG mẫu phải tồn tại");
         String text = extractor.extractContent(png);
         assertNotNull(text, "văn bản trích xuất không được null");

@@ -1,0 +1,18 @@
+{
+  "cSpell.words": ["Brevo", "Dotenv", "edocument", "hamcrest", "tdtu"],
+  "java.format.settings.url": ".vscode/java-formatter.xml",
+  "java.project.sourcePaths": ["."],
+  "java.project.referencedLibraries": [
+    "e:\\ProjectArchive\\github-repo-tieu-luan-gk-design-pattern\\GK-DesignPattern\\lib\\pdfbox-io-3.0.7.jar",
+    "e:\\ProjectArchive\\github-repo-tieu-luan-gk-design-pattern\\GK-DesignPattern\\lib\\commons-logging-1.3.6.jar",
+    "e:\\ProjectArchive\\github-repo-tieu-luan-gk-design-pattern\\GK-DesignPattern\\lib\\pdfbox-3.0.7.jar",
+    "e:\\ProjectArchive\\github-repo-tieu-luan-gk-design-pattern\\GK-DesignPattern\\lib\\fontbox-3.0.7.jar"
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "cSpell.ignorePaths": ["**/bin/**", "pom.xml", "logback-test.xml"],
+  "java.search.scope": "all",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "chat.tools.terminal.autoApprove": {
+    ".\\mvnw": true
+  }
+}

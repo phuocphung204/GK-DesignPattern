@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Swing UI",
+      "type": "shell",
+      "command": "java -cp \"./bin/classes;lib/*\" vn.edu.tdtu.edocument.ui.MainSwingUI",
+      "group": "none",
+      "problemMatcher": []
+    }
+  ]
+}

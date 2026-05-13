@@ -11,8 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import vn.edu.tdtu.edocument.model.Document;
-import vn.edu.tdtu.edocument.model.UserPreference;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.UserPreference;
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 
 public class BrevoEmailNotification implements NotificationObserver {

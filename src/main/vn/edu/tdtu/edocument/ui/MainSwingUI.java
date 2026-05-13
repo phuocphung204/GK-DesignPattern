@@ -1,13 +1,18 @@
 package vn.edu.tdtu.edocument.ui;
 
-import vn.edu.tdtu.edocument.RepositoryPattern.IRepository;
-import vn.edu.tdtu.edocument.RepositoryPattern.local_storage.JsonStorage;
-import vn.edu.tdtu.edocument.model.Document;
+import vn.edu.tdtu.edocument.document.repository.*;
+import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBDocumentRepository;
+import vn.edu.tdtu.edocument.document.repository.database.MongoDB.MongoDBConfiguration;
+import vn.edu.tdtu.edocument.document.repository.local_storage.LocalJsonRepository;
+import vn.edu.tdtu.edocument.document.model.Document;
+import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -21,15 +26,14 @@ public class MainSwingUI extends JFrame {
     private JTextArea consoleArea;
     private JTable documentTable;
     private DefaultTableModel tableModel;
-    private DocumentProcessor processor;
+    // Configuration and repository setup can be done here or via a factory method. For simplicity, we'll do it directly.
+    private IRepository _repository = RepositoryFactory.createRepository(RepositoryType.MONGODB);
+    private DocumentProcessor processor = new DocumentProcessor(_repository);
     private List<Document> documentList;
-    // Thuộc tính repository để lưu trữ và truy xuất hồ sơ, có thể là JsonStorage hoặc một lớp khác tuỳ vào cấu hình
-    private IRepository _repository = JsonStorage.getInstance(); // Khởi tạo repository với JsonStorage, có thể thay đổi để sử dụng một lớp khác nếu cần
-
+    
     public MainSwingUI() {
         System.err.println("[UI] Entering MainSwingUI constructor.");
 
-        processor = new DocumentProcessor(_repository);
         documentList = new ArrayList<>();
 
         setTitle("Hệ thống Quản lý Hồ sơ Điện tử - v1.0 (Home)");
@@ -73,28 +77,62 @@ public class MainSwingUI extends JFrame {
 
         btnClear.addActionListener(e -> consoleArea.setText(""));
 
-        documentTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && documentTable.getSelectedRow() != -1) {
-                int selectedRow = documentTable.getSelectedRow();
-                String docId = tableModel.getValueAt(selectedRow, 0).toString();
-
-                for (Document doc : documentList) {
-                    if (doc.id.equals(docId)) {
-                        System.out.println("\n--- CHI TIẾT HỒ SƠ: " + doc.id + " ---");
-                        System.out.println("Người nộp: " + doc.applicantName + " | Email: " + doc.applicantEmail
-                                + " | SĐT: " + doc.applicantPhone);
-                        System.out.println("Cán bộ tiếp nhận: " + doc.officerName + " | Email: " + doc.officerEmail
-                                + " | SĐT: " + doc.officerPhone);
-                        System.out.println("Loại hồ sơ: " + doc.documentType);
-                        System.out.println("Đường dẫn tệp: " + doc.filePath + " (" + doc.fileSizeKB + " KB)");
-                        System.out.println("Chữ ký số: " + doc.digitalSignature);
-                        System.out.println("Trạng thái hiện tại: " + doc.status);
-                        System.out.println("----------------------------------------\n");
-                        break;
-                    }
+        // Click on a row to load data from documentList and print details to console.
+        documentTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!SwingUtilities.isLeftMouseButton(e) || e.getClickCount() != 1) {
+                    return;
                 }
+
+                int viewRow = documentTable.rowAtPoint(e.getPoint());
+                if (viewRow < 0) {
+                    return;
+                }
+
+                documentTable.setRowSelectionInterval(viewRow, viewRow);
+                printSelectedDocumentToConsole();
             }
         });
+    }
+
+    private void printSelectedDocumentToConsole() {
+        int viewRow = documentTable.getSelectedRow();
+        if (viewRow < 0) {
+            return;
+        }
+
+        int modelRow = documentTable.convertRowIndexToModel(viewRow);
+        Object rawId = tableModel.getValueAt(modelRow, 0);
+        String docId = rawId == null ? null : rawId.toString();
+        if (docId == null || docId.isBlank()) {
+            System.out.println("[UI] Không tìm thấy mã hồ sơ ở dòng được chọn.");
+            return;
+        }
+
+        Document matched = null;
+        for (Document doc : documentList) {
+            if (doc != null && docId.equals(doc.id.toString())) {
+                matched = doc;
+                break;
+            }
+        }
+
+        if (matched == null) {
+            System.out.println("[UI] Không tìm thấy hồ sơ trong documentList với mã: " + docId);
+            return;
+        }
+
+        System.out.println("\n--- CHI TIẾT HỒ SƠ: " + matched.id + " ---");
+        System.out.println("Người nộp: " + matched.applicantName + " | Email: " + matched.applicantEmail
+                + " | SĐT: " + matched.applicantPhone);
+        System.out.println("Cán bộ tiếp nhận: " + matched.officerName + " | Email: " + matched.officerEmail
+                + " | SĐT: " + matched.officerPhone);
+        System.out.println("Loại hồ sơ: " + matched.documentType);
+        System.out.println("Đường dẫn tệp: " + matched.filePath + " (" + matched.fileSizeKB + " KB)");
+        System.out.println("Chữ ký số: " + matched.digitalSignature);
+        System.out.println("Trạng thái hiện tại: " + matched.status);
+        System.out.println("----------------------------------------\n");
     }
 
     private void loadExistingDocumentsAsync() {
@@ -133,7 +171,7 @@ public class MainSwingUI extends JFrame {
         documentList.add(doc);
     }
 
-    private void refreshTable() {
+    public void refreshTable() {
         tableModel.setRowCount(0);
         for (Document doc : documentList) {
             tableModel.addRow(
@@ -182,4 +220,5 @@ public class MainSwingUI extends JFrame {
             }
         });
     }
+
 }

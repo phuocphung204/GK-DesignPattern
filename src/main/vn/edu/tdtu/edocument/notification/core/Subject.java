@@ -1,6 +1,6 @@
 package vn.edu.tdtu.edocument.notification.core;
 
-import vn.edu.tdtu.edocument.model.Document;
+import vn.edu.tdtu.edocument.document.model.Document;
 
 public interface Subject {
     void attach(NotificationObserver observer);

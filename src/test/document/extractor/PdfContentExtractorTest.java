@@ -19,6 +19,18 @@ import io.github.cdimascio.dotenv.Dotenv;
 class PdfContentExtractorTest {
     private static final Logger logger = LoggerFactory.getLogger(OrcServiceTextExtractor.class);
 
+    private static boolean isLiveOcrEnabled() {
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        String enabled = dotenv.get("RUN_LIVE_OCR_TESTS");
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getProperty("run.live.ocr.tests");
+        }
+        if (enabled == null || enabled.isBlank()) {
+            enabled = System.getenv("RUN_LIVE_OCR_TESTS");
+        }
+        return "true".equalsIgnoreCase(enabled);
+    }
+
     private static boolean hasGeminiKey() {
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String key = dotenv.get("GEMINI_MODEL_KEY");
@@ -35,7 +47,7 @@ class PdfContentExtractorTest {
     @DisplayName("Kiểm tra trích xuất văn bản từ PDF đơn giản")
     void extractTextFromSimplePdf() {
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/sample-text.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/sample-text.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");
@@ -47,7 +59,7 @@ class PdfContentExtractorTest {
     @DisplayName("Kiểm tra trích xuất văn bản, từ nhiều trang PDF")
     void extractTextFromMultiPagePdf() {
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/nhieu-trang-co-text-player.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/nhieu-trang-co-text-player.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");
@@ -58,9 +70,12 @@ class PdfContentExtractorTest {
     @Test
     @DisplayName("Kiểm tra trích xuất văn bản, 1 trang PDF chỉ có hình ảnh (OCR)")
     void extractTextFromMultiPageImageOnlyPdf() {
-        Assumptions.assumeTrue(hasGeminiKey(), "Skipping OCR test: missing GEMINI_MODEL_KEY or -Dgemini.model.key");
+        Assumptions.assumeTrue(
+            isLiveOcrEnabled() && hasGeminiKey(),
+            "Skipping live OCR test (Gemini): set RUN_LIVE_OCR_TESTS=true and provide GEMINI_MODEL_KEY (or -Dgemini.model.key)"
+        );
         PdfContentExtractor extractor = new PdfContentExtractor(ExtractorFactory.ocrService);
-        File pdf = new File("server_storage/chi-co-hinh-anh.pdf"); // chuẩn bị sample
+        File pdf = new File("support_test/chi-co-hinh-anh.pdf"); // chuẩn bị sample
         assertTrue(pdf.exists(), "tệp PDF mẫu phải tồn tại");
         String text = extractor.extractContent(pdf);
         assertNotNull(text, "văn bản trích xuất không được null");
