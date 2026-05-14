@@ -26,19 +26,19 @@ public class BrevoEmailNotification implements NotificationObserver {
     public void update(UserProfile userProfile, Document doc) {
 
         if (userProfile == null || !userProfile.isValidProfile()) {
-            logFallback(doc, "Thông tin người nhận không hợp lệ.");
+            logFallback("Thông tin người nhận không hợp lệ.");
             return;
         }
 
         BrevoConfig config = BrevoConfig.fromEnv();
         if (!config.isValid()) {
-            logFallback(doc, "Thiếu cấu hình BREVO_API_KEY/BREVO_SENDER_EMAIL/BREVO_SENDER_NAME.");
+            logFallback("Thiếu cấu hình BREVO_API_KEY/BREVO_SENDER_EMAIL/BREVO_SENDER_NAME.");
             return;
         }
 
         String requestBody = buildRequestBody(userProfile, doc, config);
         if (requestBody == null) {
-            logFallback(doc, "Không có email người nhận hợp lệ.");
+            logFallback("Không có email người nhận hợp lệ.");
             return;
         }
 
@@ -52,26 +52,22 @@ public class BrevoEmailNotification implements NotificationObserver {
                     HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             int status = response.statusCode();
             if (status >= 200 && status < 300) {
-                System.out.println("[BREVO] Gui email thanh cong. Status=" + status);
+                System.out.println("[BREVO EMAIL] Gui email thanh cong. Status=" + status);
                 System.out.println(response.body());
             } else {
-                System.out.println("[BREVO] Gui email that bai. Status=" + status + " Body=" + response.body());
+                System.out.println("[BREVO EMAIL] Gui email that bai. Status=" + status + " Body=" + response.body());
                 System.out.println(response.body());
             }
         } catch (IOException ex) {
-            System.out.println("[BREVO] Loi gui email: " + ex.getMessage());
+            System.out.println("[BREVO EMAIL] Loi gui email: " + ex.getMessage());
         } catch (InterruptedException ex) {
-            System.out.println("[BREVO] Loi gui email: " + ex.getMessage());
+            System.out.println("[BREVO EMAIL] Loi gui email: " + ex.getMessage());
             Thread.currentThread().interrupt();
         }
     }
 
-    private static void logFallback(Document doc, String reason) {
-        System.out.println("[BREVO] Bo qua gui email: " + reason);
-        System.out.println("[GỬI EMAIL] -> Người nộp (" + safe(doc.applicantEmail) + "): Hồ sơ chuyển sang trạng thái "
-                + safe(doc.status));
-        System.out.println("[GỬI EMAIL] -> Cán bộ xử lý (" + safe(doc.officerEmail) + "): Hồ sơ chuyển sang trạng thái "
-                + safe(doc.status));
+    private static void logFallback(String reason) {
+        System.out.println("[BREVO EMAIL] Bo qua gui email, reason: " + reason);
     }
 
     private static String buildRequestBody(UserProfile userProfile, Document doc, BrevoConfig config) {

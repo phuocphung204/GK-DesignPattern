@@ -267,7 +267,7 @@ public class DocumentProcessor implements Subject {
         UserProfile applicantProfile = new UserProfile(doc.applicantName,
                 doc.applicantEmail,
                 doc.applicantPhone,
-                "Người nộp");
+                "người nộp");
         for (NotificationObserver observer : _officialNotificationObservers) {
             observer.update(applicantProfile, doc);
         }
@@ -275,7 +275,7 @@ public class DocumentProcessor implements Subject {
         UserProfile officerProfile = new UserProfile(doc.officerName,
                 doc.officerEmail,
                 doc.officerPhone,
-                "Người xử lý");
+                "người xử lý");
         for (NotificationObserver observer : _applicantNotificationObservers) {
             observer.update(officerProfile, doc);
         }

@@ -15,7 +15,7 @@ public class AppPushNotification implements NotificationObserver {
             return;
         }
 
-        System.out.println("[APP PUSH]  -> Gửi thông báo tới" + userProfile.getRole() + "(" + userProfile.getName()
+        System.out.println("[APP PUSH]  -> Gửi thông báo tới " + userProfile.getRole() + " (" + userProfile.getName()
                 + "): Hồ sơ chuyển sang trạng thái " + doc.status);
     }
 }
