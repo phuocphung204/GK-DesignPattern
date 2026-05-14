@@ -29,5 +29,16 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "chat.tools.terminal.autoApprove": {
     ".\\mvnw": true
-  }
+  },
+  "easy-codesnap.backgroundColor": "#ffffff",
+  "easy-codesnap.showLineNumbers": false,
+  "easy-codesnap.showWindowTitle": true,
+  "easy-codesnap.target": "window",
+  "easy-codesnap.roundingLevel": 2,
+  "easy-codesnap.uiCustomColors": {
+    "watermarkPositionInputSelectedBackgroud": "var(--vscode-focusBorder)"
+  },
+  "easy-codesnap.watermark": false,
+  "easy-codesnap.watermarkPosition": "bottom-left",
+  "easy-codesnap.windowStyle": "windows"
 }
