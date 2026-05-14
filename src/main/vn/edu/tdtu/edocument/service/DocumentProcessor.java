@@ -119,31 +119,30 @@ public class DocumentProcessor implements Subject {
             return false;
         }
 
-        if (doc.extractedContent == null || doc.extractedContent.isBlank()) {
-            System.out.println("[TRÍCH XUẤT] Đang đọc nội dung tệp đính kèm...");
-            // Trích xuất nội dung tệp đính kèm để phục vụ cho các bước kiểm tra tiếp theo
-            // (ví dụ: quét virus, kiểm tra trùng lặp)
-            try {
-                File docFile = new File(doc.filePath);
-                FileExtractorStrategy extractor = ExtractorFactory.getExtractor(doc.fileExtension);
+        System.out.println("[TRÍCH XUẤT] Đang đọc nội dung tệp đính kèm...");
+        // Trích xuất nội dung tệp đính kèm để phục vụ cho các bước kiểm tra tiếp theo
+        // (ví dụ: quét virus, kiểm tra trùng lặp)
+        try {
+            File docFile = new File(doc.filePath);
+            FileExtractorStrategy extractor = ExtractorFactory.getExtractor(doc.fileExtension);
 
-                doc.extractedContent = extractor.extractContent(docFile);
-            } catch (Exception e) {
-                System.out.println("[LỖI] Không thể đọc nội dung file: " + e.getMessage());
-                // return false;
-            }
-
-            if (doc.extractedContent == null || doc.extractedContent.isBlank()) {
-                System.out.println("[LỖI] Nội dung trích xuất rỗng. Hủy tạo hồ sơ.");
-                return false;
-            }
-            // Tính mã băm của nội dung đã trích xuất để kiểm tra trùng lặp
-            doc.extractedContentHash = Hash.encryptThisString(doc.extractedContent);
+            doc.extractedContent = extractor.extractContent(docFile);
+        } catch (Exception e) {
+            System.out.println("[LỖI] Không thể đọc nội dung file: " + e.getMessage());
+            // return false;
         }
 
+        if (doc.extractedContent == null || doc.extractedContent.isBlank()) {
+            System.out.println("[LỖI] Nội dung trích xuất rỗng. Hủy tạo hồ sơ.");
+            return false;
+        }
+        // Tính mã băm của nội dung đã trích xuất để kiểm tra trùng lặp
+        doc.extractedContentHash = Hash.encryptThisString(doc.extractedContent);
+
         // Tạo context với thông tin file để truyền vào chuỗi kiểm tra
-        _fileContext = FileValidationContext.create(doc.documentType == null ? null : doc.documentType.toString(),
-                doc.filePath, doc.fileExtension, doc.fileSizeKB, doc.digitalSignature, doc.extractedContent);
+        _fileContext = FileValidationContext.create(doc.id,
+            doc.documentType == null ? null : doc.documentType.toString(),
+            doc.filePath, doc.fileExtension, doc.fileSizeKB, doc.digitalSignature, doc.extractedContent);
 
         // Tạo chuỗi kiểm tra file mới cho mỗi lần nhập tệp đính kèm để đảm bảo tính độc
         // lập giữa các hồ sơ

@@ -55,8 +55,8 @@ public class ValidationChainBehaviorTest {
     };
 
     private static FileValidationContext sampleContext() {
-        return FileValidationContext.create("BAO_CAO", "support_test/passAll.txt", "TXT", 1, "signature",
-                "extracted-content");
+        return FileValidationContext.create(UUID.randomUUID(), "BAO_CAO", "support_test/passAll.txt", "TXT", 1,
+            "signature", "extracted-content");
     }
 
     private static final class RecordingStep extends FileValidationStepBase {
