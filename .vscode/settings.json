@@ -1,6 +1,8 @@
 {
   "cSpell.words": [
+    "bando",
     "Brevo",
+    "Consolas",
     "designpattern",
     "Dotenv",
     "edocument",
@@ -16,7 +18,13 @@
     "e:\\ProjectArchive\\github-repo-tieu-luan-gk-design-pattern\\GK-DesignPattern\\lib\\fontbox-3.0.7.jar"
   ],
   "java.configuration.updateBuildConfiguration": "automatic",
-  "cSpell.ignorePaths": ["**/bin/**", "pom.xml", "logback-test.xml"],
+  "cSpell.ignorePaths": [
+    "**/bin/**",
+    "**/target/**",
+    "pom.xml",
+    "logback-test.xml",
+    ".vscode/**"
+  ],
   "java.search.scope": "all",
   "java.compile.nullAnalysis.mode": "automatic",
   "chat.tools.terminal.autoApprove": {

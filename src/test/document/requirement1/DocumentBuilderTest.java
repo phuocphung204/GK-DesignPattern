@@ -2,18 +2,12 @@ package document.requirement1;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import javax.print.Doc;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assumptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.DisplayName;
 
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
 import vn.edu.tdtu.edocument.repository.IRepository;
-import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.builder.DocumentBuilder;
 import vn.edu.tdtu.edocument.document.builder.IDocumentBuilder;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;

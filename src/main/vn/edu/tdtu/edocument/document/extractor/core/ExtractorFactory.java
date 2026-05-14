@@ -6,16 +6,25 @@ import vn.edu.tdtu.edocument.document.extractor.impl.PngContentExtractor;
 import vn.edu.tdtu.edocument.document.extractor.impl.TxtContentExtractor;
 import vn.edu.tdtu.edocument.document.extractor.orc.core.IOcrService;
 import vn.edu.tdtu.edocument.document.extractor.orc.impl.GeminiTextExtractor;
+import java.util.Locale;
+
 import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 
 public class ExtractorFactory {
     public static final IOcrService ocrService = new GeminiTextExtractor();
 
-    public static FileExtractorStrategy getExtractor(DocumentExtension docExtension) {
-        if (docExtension == null)
+    public static FileExtractorStrategy getExtractor(String docExtension) {
+        if (docExtension == null || docExtension.isBlank())
             throw new IllegalArgumentException("File type cannot be null");
 
-        switch (docExtension) {
+        DocumentExtension extension;
+        try {
+            extension = DocumentExtension.valueOf(docExtension.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new UnsupportedOperationException("Unsupported file type: " + docExtension);
+        }
+
+        switch (extension) {
         case PDF:
             return new PdfContentExtractor(ocrService);
         case PNG:

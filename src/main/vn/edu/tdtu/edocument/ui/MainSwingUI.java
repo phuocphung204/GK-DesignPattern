@@ -3,9 +3,6 @@ package vn.edu.tdtu.edocument.ui;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.RepositoryType;
 import vn.edu.tdtu.edocument.repository.*;
-import vn.edu.tdtu.edocument.repository.database.MongoDB.MongoDBConfiguration;
-import vn.edu.tdtu.edocument.repository.database.MongoDB.MongoDBDocumentRepository;
-import vn.edu.tdtu.edocument.repository.local_storage.LocalJsonRepository;
 import vn.edu.tdtu.edocument.service.DocumentProcessor;
 
 import javax.swing.*;

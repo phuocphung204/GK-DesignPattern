@@ -3,12 +3,10 @@ package vn.edu.tdtu.edocument.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import vn.edu.tdtu.edocument.document.extractor.core.ExtractorFactory;
 import vn.edu.tdtu.edocument.document.extractor.core.FileExtractorStrategy;
 import vn.edu.tdtu.edocument.document.model.Document;
-import vn.edu.tdtu.edocument.document.model.enums.DocumentExtension;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 import vn.edu.tdtu.edocument.document.result.ValidationResult;
@@ -126,10 +124,8 @@ public class DocumentProcessor implements Subject {
             // Trích xuất nội dung tệp đính kèm để phục vụ cho các bước kiểm tra tiếp theo
             // (ví dụ: quét virus, kiểm tra trùng lặp)
             try {
-                DocumentExtension docExtension = DocumentExtension
-                        .valueOf(doc.fileExtension.trim().toUpperCase(Locale.ROOT));
                 File docFile = new File(doc.filePath);
-                FileExtractorStrategy extractor = ExtractorFactory.getExtractor(docExtension);
+                FileExtractorStrategy extractor = ExtractorFactory.getExtractor(doc.fileExtension);
 
                 doc.extractedContent = extractor.extractContent(docFile);
             } catch (Exception e) {
@@ -211,9 +207,9 @@ public class DocumentProcessor implements Subject {
         // Thêm kênh thông báo cho cán bộ xử lý
         addObservers(_officialNotificationObservers, doc.officerPreference);
 
-        sendNotifications(doc);
         saveToStorage(doc); // Lưu hồ sơ sau khi nhập đầy đủ thông tin, có thể là bản nháp hoặc chính thức
                             // tùy theo logic của ứng dụng
+        sendNotifications(doc);
         return true;
     }
 

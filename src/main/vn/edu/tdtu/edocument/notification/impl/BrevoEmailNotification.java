@@ -82,7 +82,7 @@ public class BrevoEmailNotification implements NotificationObserver {
                 + safe(doc.status);
 
         JSONObject sender = new JSONObject().put("name", config.senderName).put("email", config.senderEmail);
-        JSONObject params = new JSONObject().put("username", "ạn").put("content", content);
+        JSONObject params = new JSONObject().put("username", userProfile.getName()).put("content", content);
         JSONObject body = new JSONObject().put("sender", sender).put("templateId", TEMPLATE_ID)
                 .put("messageVersions", messageVersions).put("params", params);
 
