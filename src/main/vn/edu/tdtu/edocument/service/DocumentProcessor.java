@@ -20,6 +20,7 @@ import vn.edu.tdtu.edocument.document.validation.personal_info.steps.BasicInfoVa
 import vn.edu.tdtu.edocument.notification.core.NotificationObserver;
 import vn.edu.tdtu.edocument.notification.core.Subject;
 import vn.edu.tdtu.edocument.notification.core.UserProfile;
+import vn.edu.tdtu.edocument.notification.impl.AppPushNotification;
 import vn.edu.tdtu.edocument.notification.impl.BrevoEmailNotification;
 import vn.edu.tdtu.edocument.notification.impl.SMSNotification;
 import vn.edu.tdtu.edocument.repository.FileStorageHelper;
@@ -141,8 +142,8 @@ public class DocumentProcessor implements Subject {
 
         // Tạo context với thông tin file để truyền vào chuỗi kiểm tra
         _fileContext = FileValidationContext.create(doc.id,
-            doc.documentType == null ? null : doc.documentType.toString(),
-            doc.filePath, doc.fileExtension, doc.fileSizeKB, doc.digitalSignature, doc.extractedContent);
+                doc.documentType == null ? null : doc.documentType.toString(), doc.filePath, doc.fileExtension,
+                doc.fileSizeKB, doc.digitalSignature, doc.extractedContent);
 
         // Tạo chuỗi kiểm tra file mới cho mỗi lần nhập tệp đính kèm để đảm bảo tính độc
         // lập giữa các hồ sơ
@@ -240,7 +241,7 @@ public class DocumentProcessor implements Subject {
                 attach(observers, new SMSNotification());
                 break;
             case APP_PUSH:
-                attach(observers, new SMSNotification());
+                attach(observers, new AppPushNotification());
             default:
                 break;
             }
