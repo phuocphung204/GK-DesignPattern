@@ -24,8 +24,8 @@ public class Document {
     public String extractedContent;
     public String extractedContentHash;
     public DocumentStatus status;
-    public List<NotificationChannelType> applicantPreference = new ArrayList<>();
-    public List<NotificationChannelType> officerPreference = new ArrayList<>();
+    public List<NotificationChannelType> applicantPreference;
+    public List<NotificationChannelType> officerPreference;
 
     public Document(UUID id,
             String applicantName,

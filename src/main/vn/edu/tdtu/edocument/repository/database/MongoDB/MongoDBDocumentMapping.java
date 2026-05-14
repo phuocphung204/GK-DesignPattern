@@ -3,7 +3,10 @@ package vn.edu.tdtu.edocument.repository.database.MongoDB;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.UUID;
@@ -23,7 +26,9 @@ public class MongoDBDocumentMapping {
                 .append("digitalSignature", document.digitalSignature)
                 .append("extractedContent", document.extractedContent)
                 .append("extractedContentHash", document.extractedContentHash)
-                .append("status", enumToString(document.status));
+                .append("status", enumToString(document.status))
+                .append("applicantPreference", toEnumNameList(document.applicantPreference))
+                .append("officerPreference", toEnumNameList(document.officerPreference));
     }
 
     public static Document mapBsonToDocument(org.bson.Document bsonDoc) {
@@ -57,6 +62,16 @@ public class MongoDBDocumentMapping {
         DocumentStatus status = parseEnum(DocumentStatus.class, bsonDoc.getString("status"));
         if (status != null) {
             doc.status = status;
+        }
+
+        List<NotificationChannelType> applicantPreference = parsePreferenceList(bsonDoc.get("applicantPreference"));
+        if (applicantPreference != null) {
+            doc.applicantPreference = applicantPreference;
+        }
+
+        List<NotificationChannelType> officerPreference = parsePreferenceList(bsonDoc.get("officerPreference"));
+        if (officerPreference != null) {
+            doc.officerPreference = officerPreference;
         }
 
         return doc;
@@ -114,6 +129,19 @@ public class MongoDBDocumentMapping {
         return value == null ? null : value.name();
     }
 
+    private static List<String> toEnumNameList(List<NotificationChannelType> values) {
+        if (values == null) {
+            return null;
+        }
+        List<String> names = new ArrayList<>();
+        for (NotificationChannelType type : values) {
+            if (type != null) {
+                names.add(type.name());
+            }
+        }
+        return names;
+    }
+
     private static String normalizeEnum(String value) {
         return value == null ? null : value.trim().toUpperCase(Locale.ROOT);
     }
@@ -127,5 +155,33 @@ public class MongoDBDocumentMapping {
         } catch (IllegalArgumentException ex) {
             return null;
         }
+    }
+
+    private static List<NotificationChannelType> parsePreferenceList(Object raw) {
+        if (raw == null) {
+            return null;
+        }
+        List<NotificationChannelType> result = new ArrayList<>();
+        if (raw instanceof List<?> list) {
+            for (Object item : list) {
+                NotificationChannelType type = null;
+                if (item instanceof NotificationChannelType notificationType) {
+                    type = notificationType;
+                } else if (item != null) {
+                    type = parseEnum(NotificationChannelType.class, String.valueOf(item));
+                }
+                if (type != null) {
+                    result.add(type);
+                }
+            }
+            return result;
+        }
+
+        NotificationChannelType type = parseEnum(NotificationChannelType.class, String.valueOf(raw));
+        if (type != null) {
+            result.add(type);
+            return result;
+        }
+        return null;
     }
 }

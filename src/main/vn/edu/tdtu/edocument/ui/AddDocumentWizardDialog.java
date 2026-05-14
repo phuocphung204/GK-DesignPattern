@@ -123,7 +123,8 @@ public class AddDocumentWizardDialog extends JDialog {
         lblApplicantNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(lblApplicantNotify);
 
-        formPanel.add(buildNotificationChannelPanel(applicantNotificationChannels));
+        List<NotificationChannelType> applicantPreference = this.docBuilder.Build().applicantPreference;
+        formPanel.add(buildNotificationChannelPanel(applicantNotificationChannels, applicantPreference));
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
@@ -219,20 +220,26 @@ public class AddDocumentWizardDialog extends JDialog {
         lblOfficerNotify.setAlignmentX(Component.LEFT_ALIGNMENT);
         formPanel.add(lblOfficerNotify);
 
-        formPanel.add(buildNotificationChannelPanel(officerNotificationChannels));
+        List<NotificationChannelType> lastOfficerPreference = this.docBuilder.Build().officerPreference;
+        formPanel.add(buildNotificationChannelPanel(officerNotificationChannels, lastOfficerPreference));
 
         panel.add(formPanel, BorderLayout.CENTER);
         return panel;
     }
 
-    private JPanel buildNotificationChannelPanel(EnumMap<NotificationChannelType, JCheckBox> target) {
+    private JPanel buildNotificationChannelPanel(EnumMap<NotificationChannelType, JCheckBox> target,
+            List<NotificationChannelType> lastPreference) {
         target.clear();
+        if (lastPreference == null) {
+            lastPreference = NotificationChannelType.defaultPreference();
+            System.out.println(
+                    "Khong tim thay thiet lap uu tien thong bao truoc do, su dung mac dinh: " + lastPreference);
+        }
         JPanel channelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         channelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         for (NotificationChannelType type : NotificationChannelType.values()) {
-            JCheckBox checkBox = new JCheckBox(type.getDisplayName(),
-                    NotificationChannelType.defaultPreference().contains(type));
+            JCheckBox checkBox = new JCheckBox(type.getDisplayName(), lastPreference.contains(type));
             target.put(type, checkBox);
             channelPanel.add(checkBox);
         }

@@ -7,7 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import vn.edu.tdtu.edocument.document.model.Document;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentStatus;
 import vn.edu.tdtu.edocument.document.model.enums.DocumentTypes;
+import vn.edu.tdtu.edocument.document.model.enums.NotificationChannelType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -35,6 +38,8 @@ public class AWSDocumentMapping {
         root.put("extractedContent", document.extractedContent);
         root.put("extractedContentHash", document.extractedContentHash);
         root.put("status", enumToString(document.status));
+        putPreferenceArray(root, "applicantPreference", document.applicantPreference);
+        putPreferenceArray(root, "officerPreference", document.officerPreference);
 
         try {
             return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(root);
@@ -86,6 +91,16 @@ public class AWSDocumentMapping {
                 doc.status = status;
             }
 
+            List<NotificationChannelType> applicantPreference = parsePreferenceList(root.get("applicantPreference"));
+            if (applicantPreference != null) {
+                doc.applicantPreference = applicantPreference;
+            }
+
+            List<NotificationChannelType> officerPreference = parsePreferenceList(root.get("officerPreference"));
+            if (officerPreference != null) {
+                doc.officerPreference = officerPreference;
+            }
+
             return doc;
         } catch (Exception e) {
             return null;
@@ -94,6 +109,21 @@ public class AWSDocumentMapping {
 
     private static String enumToString(Enum<?> value) {
         return value == null ? null : value.name();
+    }
+
+    private static void putPreferenceArray(ObjectNode root, String fieldName,
+            List<NotificationChannelType> preferences) {
+        if (preferences == null) {
+            root.putNull(fieldName);
+            return;
+        }
+        var array = MAPPER.createArrayNode();
+        for (NotificationChannelType type : preferences) {
+            if (type != null) {
+                array.add(type.name());
+            }
+        }
+        root.set(fieldName, array);
     }
 
     private static String normalizeEnum(String value) {
@@ -124,6 +154,29 @@ public class AWSDocumentMapping {
             return null;
         }
         return "null".equalsIgnoreCase(value) ? null : value;
+    }
+
+    private static List<NotificationChannelType> parsePreferenceList(JsonNode node) {
+        if (node == null || node.isNull() || node.isMissingNode()) {
+            return null;
+        }
+        List<NotificationChannelType> result = new ArrayList<>();
+        if (node.isArray()) {
+            for (JsonNode item : node) {
+                NotificationChannelType type = parseEnum(NotificationChannelType.class, textOrNull(item));
+                if (type != null) {
+                    result.add(type);
+                }
+            }
+            return result;
+        }
+
+        NotificationChannelType type = parseEnum(NotificationChannelType.class, textOrNull(node));
+        if (type != null) {
+            result.add(type);
+            return result;
+        }
+        return null;
     }
 
     private static UUID parseUuidOrNull(String value) {

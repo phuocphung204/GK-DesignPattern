@@ -7,6 +7,20 @@
       "command": "java -jar target/gk-designpattern-1.0.0-SNAPSHOT.jar",
       "group": "none",
       "problemMatcher": []
+    },
+    {
+      "label": "Build with Maven - no tests",
+      "type": "shell",
+      "command": "mvnw clean package -DskipTests",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "type": "java (buildArtifact)",
+      "targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
+      "elements": ["${compileOutput}", "${dependencies}"],
+      "problemMatcher": [],
+      "label": "java (buildArtifact): GK-DesignPattern"
     }
   ]
 }
