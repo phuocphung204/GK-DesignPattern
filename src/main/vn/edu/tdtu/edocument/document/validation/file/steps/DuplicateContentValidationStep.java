@@ -34,11 +34,13 @@ public class DuplicateContentValidationStep extends FileValidationStepBase {
         if (extractedContent == null || extractedContent.isBlank()) {
             return false;
         }
+
         String hash = Hash.encryptThisString(extractedContent);
         if (documentId != null) {
             Document existingDoc = _repository.GetDocumentById(documentId);
+            // Trùng với chính nó
             if (existingDoc != null && hash.equals(existingDoc.extractedContentHash)) {
-                return true; // Trùng với chính nó
+                return false;
             }
         }
         return _repository.ExistsByHash(hash);
